@@ -1,0 +1,57 @@
+var board = [];
+
+var x = 8;
+var y = 8;
+
+//numbered possitions
+
+/*
+for(var i = 0; i < x; i++) {
+        board[i] = [];
+        for(var j = 0; j  < y; j++) {
+                board[i][j] = i+','+j;
+        }
+}
+*/
+
+//function set pieces on the board
+
+for(var i = 0; i < x; i++) {
+        board[i] = [];
+        for(var j = 0; j  < y; j++) {
+                board[i][j] = "-";
+        }
+}
+
+//standart board[][] = ;
+
+var P = "P"; var R = "R"; var N = "N"; var B = "B"; var Q = "Q"; var K = "K";
+
+for(var i = 0; i < 8; i++) {
+        board[1][i] = P;
+        board[6][i] = P;
+}
+
+setPiece(0,0,R); setPiece(0,7,R); setPiece(7,0,R); setPiece(7,7,R);
+setPiece(0,1,N); setPiece(0,6,N); setPiece(7,1,N); setPiece(7,6,N);
+setPiece(0,2,B); setPiece(0,5,B); setPiece(7,2,B); setPiece(7,5,B);
+setPiece(0,3,Q); setPiece(7,4,Q);
+setPiece(0,4,K); setPiece(7,3,K);
+
+//display
+
+for(var i = 0; i < x; i++) {
+        for(var j = 0; j < y; j++) {
+//              console.log(board[i][j]);
+                process.stdout.write(board[i][j] + " ");
+        }
+        process.stdout.write("\n");
+}
+
+process.stdout.write("\n");
+
+//other functions start here
+
+function setPiece(x,y,type) {
+        board[x][y] = type;
+}
