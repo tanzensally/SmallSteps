@@ -1,0 +1,9 @@
+//downright movement
+        while (i+x < board.length && j+y < board[0].length) {
+                if ( isEmpty(i+x,j+y) ) {
+                        moves.push((i+x)+','+(j+y));
+                        i++; j++;
+                } else {
+                        break;
+                }
+        }
