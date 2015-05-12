@@ -149,58 +149,53 @@ function movesRook(x,y) {
 function movesBishop(x,y) {
         var moves = [];
 
-        upleft: {
-                for (var i = (x-1); i >= 0; i--) {
-                        for (var j = (y-1); j >= 0; j--) {
-                                if(-(i-x) == -(j-y)) {
-                                        if( isEmpty(i,j) ) {
-                                                moves.push(i+ ',' +j);
-                                        } else {
-                                                break upleft;
-                                        }
-                                }
-                        }
+        var i = 0;
+        var j = 0;
+
+        //upleft
+        while (i+x-1 >= 0 && j+y-1 >= 0) {
+                if ( isEmpty(i+x-1,j+y-1) ) {
+                        moves.push((i+x-1)+','+(j+y-1));
+                        i--; j--;
+                } else {
+                        i = 0; j = 0;
+                        break;
                 }
         }
-        downright: {
-                for (var i = (x+1); i < board.length; i++) {
-                        for (var j = (y+1); j < board[0].length; j++) {
-                                if((i-x) == (j-y)) {
-                                        if( isEmpty(i,j) ) {
-                                                moves.push(i+ ',' +j);
-                                        } else {
-                                                break downright;
-                                        }
-                                }
-                        }
+
+        //downright
+        while (i+x+1 < board.length && j+y+1 < board[0].length) {
+                if ( isEmpty(i+x+1,j+y+1) ) {
+                        moves.push((i+x+1)+','+(j+y+1));
+                        i++; j++;
+                } else {
+                        i = 0; j = 0;
+                        break;
                 }
         }
-        downleft: { 
-                for (var i = (x+1); i < board.length; i++) {
-                        for (var j = (y-1); j >= 0; j--) {
-                                if ((i-x) == -(j-y)) {
-                                        if( isEmpty(i,j) ) {
-                                                moves.push(i+ ',' +j);
-                                        } else {
-                                                break downleft;
-                                        }
-                                }
-                        }
+
+        //downleft
+        while (i+x+1 < board.length && j+y-1 >= 0) {
+                if ( isEmpty(i+x+1,j+y-1) ) {
+                        moves.push((i+x+1)+','+(j+y-1));
+                        i++; j--;
+                } else {
+                        i = 0; j = 0;
+                        break;
                 }
         }
-        upright: {
-                for (var i = (x-1); i >= 0; i--) {
-                        for (var j = (y+1); j < board[0].length; j++) {
-                                if (-(i-x) == (j-y)) {
-                                        if( isEmpty(i,j) ) {
-                                                moves.push(i+ ',' +j);
-                                        } else {
-                                                break upright;
-                                        }
-                                }
-                        }
+
+        //upright
+        while (i+x-1 >= 0 && j+y+1 < board[0].length) {
+                if ( isEmpty(i+x-1,j+y+1) ) {
+                        moves.push((i+x-1)+','+(j+y+1));
+                        i--; j++;
+                } else {
+                        i = 0; j = 0;
+                        break;
                 }
         }
 
         return moves;
 }
+
