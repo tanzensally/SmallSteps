@@ -2,10 +2,12 @@ var board = [];
 
 setBoard(8,8);
 setStdBoard();
+
 displayBoard();
 
-//displayMoves(4,4, movesRook(4,4)); //using test Rook on setStdBoard();
-displayMoves(movesBishop(2,2)); //same
+setPiece(4,4,'Q'); //test piece
+
+displayMoves(movesPiece(4,4));
 
 function setBoard (x,y) {
 
@@ -43,9 +45,6 @@ function setStdBoard() {
         setPiece(0,2,B); setPiece(0,5,B); setPiece(7,2,B); setPiece(7,5,B);
         setPiece(0,3,Q); setPiece(7,4,Q);
         setPiece(0,4,K); setPiece(7,3,K);
-
-//      setPiece(4,4,R);
-        setPiece(2,2,B);
 
 }
 
@@ -108,8 +107,45 @@ function isEmpty(x, y) {
         }
 }
 
-function movesRook(x,y) {
+function movesPiece(x,y) {
+
         var moves = [];
+        var type = board[x][y];
+
+        switch(type) {
+
+                case 'R':
+                        moveUp(x,y,moves);
+                        moveDown(x,y,moves);
+                        moveLeft(x,y,moves);
+                        moveRight(x,y,moves);
+                        return moves;
+
+                case 'B':
+                        moveUpRight(x,y,moves);
+                        moveUpLeft(x,y,moves);
+                        moveDownRight(x,y,moves);
+                        moveDownLeft(x,y,moves);
+                        return moves;
+
+                case 'Q':
+                        moveUp(x,y,moves);
+                        moveDown(x,y,moves);
+                        moveLeft(x,y,moves);
+                        moveRight(x,y,moves);
+                        moveUpRight(x,y,moves);
+                        moveUpLeft(x,y,moves);
+                        moveDownRight(x,y,moves);
+                        moveDownLeft(x,y,moves);
+                        return moves;
+
+                default:
+                        break;
+        }
+
+}
+
+function moveUp(x,y,moves) {
 
         for (var i = (x-1); i >= 0; i--) {
                 if( isEmpty(i,y) ) {
@@ -119,6 +155,11 @@ function movesRook(x,y) {
                 }
         }
 
+        return moves;
+}
+
+function moveDown(x,y,moves) {
+
         for (var i = (x+1); i < board.length; i++) {
                 if( isEmpty(i,y) ) {
                         moves.push(i+ ',' +y);
@@ -127,6 +168,11 @@ function movesRook(x,y) {
                 }
         }
 
+        return moves;
+}
+
+function moveLeft(x,y,moves) {
+
         for (var j = (y-1); j >= 0; j--) {
                 if( isEmpty(x,j) ) {
                         moves.push(x+ ',' +j);
@@ -134,6 +180,11 @@ function movesRook(x,y) {
                         break;
                 }
         }
+
+        return moves;
+}
+
+function moveRight(x,y,moves) {
 
         for (var j = (y+1); j < board[0].length; j++) {
                 if( isEmpty(x,j) ) {
@@ -146,35 +197,40 @@ function movesRook(x,y) {
         return moves;
 }
 
-function movesBishop(x,y) {
-        var moves = [];
+function moveUpLeft(x,y,moves) {
 
-        var i = 0;
-        var j = 0;
+        var i = 0; var j = 0;
 
-        //upleft
         while (i+x-1 >= 0 && j+y-1 >= 0) {
                 if ( isEmpty(i+x-1,j+y-1) ) {
                         moves.push((i+x-1)+','+(j+y-1));
                         i--; j--;
                 } else {
-                        i = 0; j = 0;
                         break;
                 }
         }
+        return moves;
+}
 
-        //downright
+function moveDownRight(x,y,moves) {
+
+        var i = 0; var j = 0;
+
         while (i+x+1 < board.length && j+y+1 < board[0].length) {
                 if ( isEmpty(i+x+1,j+y+1) ) {
                         moves.push((i+x+1)+','+(j+y+1));
                         i++; j++;
                 } else {
-                        i = 0; j = 0;
                         break;
                 }
         }
+        return moves;
+}
 
-        //downleft
+function moveDownLeft(x,y,moves) {
+
+        var i = 0; var j = 0;
+
         while (i+x+1 < board.length && j+y-1 >= 0) {
                 if ( isEmpty(i+x+1,j+y-1) ) {
                         moves.push((i+x+1)+','+(j+y-1));
@@ -184,8 +240,12 @@ function movesBishop(x,y) {
                         break;
                 }
         }
+        return moves;
+}
 
-        //upright
+function moveUpRight(x,y,moves) {
+        var i = 0; var j = 0;
+
         while (i+x-1 >= 0 && j+y+1 < board[0].length) {
                 if ( isEmpty(i+x-1,j+y+1) ) {
                         moves.push((i+x-1)+','+(j+y+1));
@@ -195,7 +255,5 @@ function movesBishop(x,y) {
                         break;
                 }
         }
-
         return moves;
 }
-
