@@ -1,259 +1,90 @@
-var board = [];
+//ChessBoardTest3 - By eagleangelo and some nice people on the pbsideachannel (you know who you are)
 
-setBoard(8,8);
-setStdBoard();
 
-displayBoard();
+//ChessBoard and Chesspiece prototypes
 
-setPiece(4,4,'Q'); //test piece
+var ChessBoard = function (x,y) {
 
-displayMoves(movesPiece(4,4));
+        this.ids = 0;
+        this.board = [];
+        this.board = this.setBoard(this.board,x,y);
 
-function setBoard (x,y) {
+};
+
+var ChessPiece = function (id,type,player) {
+                this.id = id;
+                this.type = type;
+                this.player = player;
+                this.hasMoved = false;
+};
+
+ChessBoard.prototype.setBoard = function(board,x,y) {
 
         for(var i = 0; i < x; i++) {
                 board[i] = [];
                 for(var j = 0; j  < y; j++) {
-                        board[i][j] = '-';
+                        board[i][j] = null;
                 }
         }
-/*
-        for(var i = 0; i < x; i++) {
-                board[i] = [];
-                for(var j = 0; j  < y; j++) {
-                        board[i][j] = i+','+j;
-                }
-        }
-*/
-}
+        return board;
+};
 
-function setPiece(x,y,type) {
-        board[x][y] = type;
-}
 
-function setStdBoard() {
+//set a chess piece and gives it an ID based on a counter inside the Board
 
-        var P = 'P'; var R = 'R'; var N = 'N'; var B = 'B'; var Q = 'Q'; var K = 'K';
+ChessBoard.prototype.setPiece = function(Board,x,y,type,player) {
+        var piece = new ChessPiece(Board.ids+1,type,player);
+        //var piece = new ChessPiece(0,type,player);
+        Board.ids++;
+        Board.board[x][y] = piece;
+};
+
+
+//set a standard chessboard, 2 players, 8 by 8
+
+ChessBoard.prototype.setStdBoard = function (Board) {
 
         for(var i = 0; i < 8; i++) {
-                board[1][i] = P;
-                board[6][i] = P;
+                Board.setPiece(Board,1,i,'P',1);
+                Board.setPiece(Board,6,i,'P',2);
         }
 
-        setPiece(0,0,R); setPiece(0,7,R); setPiece(7,0,R); setPiece(7,7,R);
-        setPiece(0,1,N); setPiece(0,6,N); setPiece(7,1,N); setPiece(7,6,N);
-        setPiece(0,2,B); setPiece(0,5,B); setPiece(7,2,B); setPiece(7,5,B);
-        setPiece(0,3,Q); setPiece(7,4,Q);
-        setPiece(0,4,K); setPiece(7,3,K);
+        Board.setPiece(Board,0,0,'R',1); Board.setPiece(Board,0,7,'R',1);
+        Board.setPiece(Board,7,0,'R',2); Board.setPiece(Board,7,7,'R',2);
 
-}
+        Board.setPiece(Board,0,1,'N',1); Board.setPiece(Board,0,6,'N',1);
+        Board.setPiece(Board,7,1,'N',2); Board.setPiece(Board,7,6,'N',2);
 
-function displayBoard() {
+        Board.setPiece(Board,0,2,'B',1); Board.setPiece(Board,0,5,'B',1);
+        Board.setPiece(Board,7,2,'B',2); Board.setPiece(Board,7,5,'B',2);
 
-        for(var i = 0; i < board.length; i++) {
-                for(var j = 0; j < board[0].length; j++) {
-                        process.stdout.write(board[i][j] + ' ');
+        Board.setPiece(Board,0,3,'Q',1); Board.setPiece(Board,7,3,'Q',2);
+
+        Board.setPiece(Board,0,4,'K',1); Board.setPiece(Board,7,4,'K',2);
+
+};
+
+
+//display the entire chessboard, based on the type property, can be changed for id or player
+
+ChessBoard.prototype.displayBoard = function (Board) {
+
+        for(var i = 0; i < Board.board.length; i++) {
+                for(var j = 0; j < Board.board[0].length; j++) {
+                        if(Board.board[i][j] == null){
+                                process.stdout.write('- ');
+                        } else {
+                                process.stdout.write(Board.board[i][j].type + ' ');
+                        }
                 }
                 process.stdout.write('\n');
         }
 
         process.stdout.write('\n'); //for terminal purposes
-}
+};
 
-function displayMoves(movesPiece) {
 
-        var moves = movesPiece;
+var ChessBoard1 = new ChessBoard (8,8);
 
-        for(var i = 0; i < moves.length; i++) {
-                process.stdout.write(moves[i]+ '; ');
-        }
-
-        process.stdout.write('\n');
-
-        var displayBoard = JSON.parse(JSON.stringify(board));
-
-        var display = [];
-        var displayX = [];
-        var displayY = [];
-
-        for(var i = 0; i < moves.length; i++) {
-                display = moves[i].split(',');
-                displayX.push(display[0]);
-                displayY.push(display[1]);
-        }
-
-        for(var i = 0; i < displayX.length; i++) {
-                displayBoard[displayX[i]][displayY[i]] = 'x';
-        }
-
-        process.stdout.write('\n');
-
-        for(var i = 0; i < displayBoard.length; i++) {
-                for(var j = 0; j < displayBoard[0].length; j++) {
-                        process.stdout.write(displayBoard[i][j] + ' ');
-                }
-                process.stdout.write('\n');
-        }
-
-        process.stdout.write('\n'); //for terminal purposes
-
-}
-
-function isEmpty(x, y) {
-        if(board[x][y] == '-') {
-                return true;
-        } else {
-                return false;
-        }
-}
-
-function movesPiece(x,y) {
-
-        var moves = [];
-        var type = board[x][y];
-
-        switch(type) {
-
-                case 'R':
-                        moveUp(x,y,moves);
-                        moveDown(x,y,moves);
-                        moveLeft(x,y,moves);
-                        moveRight(x,y,moves);
-                        return moves;
-
-                case 'B':
-                        moveUpRight(x,y,moves);
-                        moveUpLeft(x,y,moves);
-                        moveDownRight(x,y,moves);
-                        moveDownLeft(x,y,moves);
-                        return moves;
-
-                case 'Q':
-                        moveUp(x,y,moves);
-                        moveDown(x,y,moves);
-                        moveLeft(x,y,moves);
-                        moveRight(x,y,moves);
-                        moveUpRight(x,y,moves);
-                        moveUpLeft(x,y,moves);
-                        moveDownRight(x,y,moves);
-                        moveDownLeft(x,y,moves);
-                        return moves;
-
-                default:
-                        break;
-        }
-
-}
-
-function moveUp(x,y,moves) {
-
-        for (var i = (x-1); i >= 0; i--) {
-                if( isEmpty(i,y) ) {
-                        moves.push(i+ ',' +y);
-                } else {
-                        break;
-                }
-        }
-
-        return moves;
-}
-
-function moveDown(x,y,moves) {
-
-        for (var i = (x+1); i < board.length; i++) {
-                if( isEmpty(i,y) ) {
-                        moves.push(i+ ',' +y);
-                } else {
-                        break;
-                }
-        }
-
-        return moves;
-}
-
-function moveLeft(x,y,moves) {
-
-        for (var j = (y-1); j >= 0; j--) {
-                if( isEmpty(x,j) ) {
-                        moves.push(x+ ',' +j);
-                } else {
-                        break;
-                }
-        }
-
-        return moves;
-}
-
-function moveRight(x,y,moves) {
-
-        for (var j = (y+1); j < board[0].length; j++) {
-                if( isEmpty(x,j) ) {
-                        moves.push(x+ ',' +j);
-                } else {
-                        break;
-                }
-        }
-
-        return moves;
-}
-
-function moveUpLeft(x,y,moves) {
-
-        var i = 0; var j = 0;
-
-        while (i+x-1 >= 0 && j+y-1 >= 0) {
-                if ( isEmpty(i+x-1,j+y-1) ) {
-                        moves.push((i+x-1)+','+(j+y-1));
-                        i--; j--;
-                } else {
-                        break;
-                }
-        }
-        return moves;
-}
-
-function moveDownRight(x,y,moves) {
-
-        var i = 0; var j = 0;
-
-        while (i+x+1 < board.length && j+y+1 < board[0].length) {
-                if ( isEmpty(i+x+1,j+y+1) ) {
-                        moves.push((i+x+1)+','+(j+y+1));
-                        i++; j++;
-                } else {
-                        break;
-                }
-        }
-        return moves;
-}
-
-function moveDownLeft(x,y,moves) {
-
-        var i = 0; var j = 0;
-
-        while (i+x+1 < board.length && j+y-1 >= 0) {
-                if ( isEmpty(i+x+1,j+y-1) ) {
-                        moves.push((i+x+1)+','+(j+y-1));
-                        i++; j--;
-                } else {
-                        i = 0; j = 0;
-                        break;
-                }
-        }
-        return moves;
-}
-
-function moveUpRight(x,y,moves) {
-        var i = 0; var j = 0;
-
-        while (i+x-1 >= 0 && j+y+1 < board[0].length) {
-                if ( isEmpty(i+x-1,j+y+1) ) {
-                        moves.push((i+x-1)+','+(j+y+1));
-                        i--; j++;
-                } else {
-                        i = 0; j = 0;
-                        break;
-                }
-        }
-        return moves;
-}
+ChessBoard1.setStdBoard(ChessBoard1);
+ChessBoard1.displayBoard(ChessBoard1);
