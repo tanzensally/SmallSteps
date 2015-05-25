@@ -34,7 +34,6 @@ ChessBoard.prototype.setBoard = function(board,x,y) {
 
 ChessBoard.prototype.setPiece = function(Board,x,y,type,player) {
         var piece = new ChessPiece(Board.ids+1,type,player);
-        //var piece = new ChessPiece(0,type,player);
         Board.ids++;
         Board.board[x][y] = piece;
 };
