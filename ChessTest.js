@@ -80,7 +80,7 @@ ChessBoard.prototype.displayBoard = function (Board) {
                 process.stdout.write('\n');
         }
 
-        process.stdout.write('\n'); //for terminal purposes
+        process.stdout.write('\n');
 };
 
 
