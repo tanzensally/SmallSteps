@@ -146,6 +146,19 @@ ChessBoard.prototype.isEmpty = function (Board,x,y) {
         }
 };
 
+//isEnemy?
+
+ChessBoard.prototype.isEnemy = function (Board,x,y,i,j) {
+        if ( Board.board[i][j] != null ) {
+                if (Board.board[x][y].player != Board.board[i][j].player) {
+                        return true;
+                } else {
+                        return false;
+                }
+        } else {
+                return false;
+        }
+};
 
 //Provide a list of available moves for a given piece, recognize the type and return the array of moves
 
@@ -193,7 +206,10 @@ ChessBoard.prototype.movesPiece = function(Board,x,y) {
 ChessBoard.prototype.moveN = function(Board,x,y,moves) {
 
         for (var i = (x-1); i >= 0; i--) {
-                if( Board.isEmpty(Board,i,y) ) {
+                if( Board.isEnemy(Board,x,y,i,y) ) {
+                        moves.push(i+ ',' +y);
+                        break;
+                } else if( Board.isEmpty(Board,i,y) ) {
                         moves.push(i+ ',' +y);
                 } else {
                         break;
@@ -206,7 +222,10 @@ ChessBoard.prototype.moveN = function(Board,x,y,moves) {
 ChessBoard.prototype.moveS = function(Board,x,y,moves) {
 
         for (var i = (x+1); i < Board.board.length; i++) {
-                if( Board.isEmpty(Board,i,y) ) {
+                if( Board.isEnemy(Board,x,y,i,y) ) {
+                        moves.push(i+ ',' +y);
+                        break;
+                } else if( Board.isEmpty(Board,i,y) ) {
                         moves.push(i+ ',' +y);
                 } else {
                         break;
@@ -219,7 +238,10 @@ ChessBoard.prototype.moveS = function(Board,x,y,moves) {
 ChessBoard.prototype.moveW = function (Board,x,y,moves) {
 
         for (var j = (y-1); j >= 0; j--) {
-                if( Board.isEmpty(Board,x,j) ) {
+                if( Board.isEnemy(Board,x,y,x,j) ) {
+                        moves.push(x+ ',' +j);
+                        break;
+                } else if( Board.isEmpty(Board,x,j) ) {
                         moves.push(x+ ',' +j);
                 } else {
                         break;
@@ -232,7 +254,10 @@ ChessBoard.prototype.moveW = function (Board,x,y,moves) {
 ChessBoard.prototype.moveE = function (Board,x,y,moves) {
 
         for (var j = (y+1); j < Board.board[0].length; j++) {
-                if( Board.isEmpty(Board,x,j) ) {
+                if( Board.isEnemy(Board,x,y,x,j) ) {
+                        moves.push(x+ ',' +j);
+                        break;
+                } else if( Board.isEmpty(Board,x,j) ) {
                         moves.push(x+ ',' +j);
                 } else {
                         break;
@@ -244,11 +269,14 @@ ChessBoard.prototype.moveE = function (Board,x,y,moves) {
 
 ChessBoard.prototype.moveNW = function (Board,x,y,moves) {
 
-        var i = 0; var j = 0;
+        var i = -1; var j = -1;
 
-        while (i+x-1 >= 0 && j+y-1 >= 0) {
-                if ( Board.isEmpty(Board,i+x-1,j+y-1) ) {
-                        moves.push((i+x-1)+','+(j+y-1));
+        while (i+x >= 0 && j+y >= 0) {
+                if( Board.isEnemy(Board,x,y,i+x,j+y) ) {
+                        moves.push((i+x)+','+(j+y));
+                        break;
+                } else if ( Board.isEmpty(Board,i+x,j+y) ) {
+                        moves.push((i+x)+','+(j+y));
                         i--; j--;
                 } else {
                         break;
@@ -259,11 +287,14 @@ ChessBoard.prototype.moveNW = function (Board,x,y,moves) {
 
 ChessBoard.prototype.moveSE = function (Board,x,y,moves) {
 
-        var i = 0; var j = 0;
+        var i = 1; var j = 1;
 
-        while (i+x+1 < Board.board.length && j+y+1 < Board.board[0].length) {
-                if ( Board.isEmpty(Board,i+x+1,j+y+1) ) {
-                        moves.push((i+x+1)+','+(j+y+1));
+        while (i+x < Board.board.length && j+y < Board.board[0].length) {
+                if( Board.isEnemy(Board,x,y,i+x,j+y) ) {
+                        moves.push((i+x)+','+(j+y));
+                        break;
+                } else if ( Board.isEmpty(Board,i+x,j+y) ) {
+                        moves.push((i+x)+','+(j+y));
                         i++; j++;
                 } else {
                         break;
@@ -274,11 +305,14 @@ ChessBoard.prototype.moveSE = function (Board,x,y,moves) {
 
 ChessBoard.prototype.moveSW = function (Board,x,y,moves) {
 
-        var i = 0; var j = 0;
+        var i = 1; var j = -1;
 
         while (i+x+1 < Board.board.length && j+y-1 >= 0) {
-                if ( Board.isEmpty(Board,i+x+1,j+y-1) ) {
-                        moves.push((i+x+1)+','+(j+y-1));
+                if( Board.isEnemy(Board,x,y,i+x,j+y) ) {
+                        moves.push((i+x)+','+(j+y));
+                        break;
+                } else if ( Board.isEmpty(Board,i+x,j+y) ) {
+                        moves.push((i+x)+','+(j+y));
                         i++; j--;
                 } else {
                         break;
@@ -289,11 +323,14 @@ ChessBoard.prototype.moveSW = function (Board,x,y,moves) {
 
 ChessBoard.prototype.moveNE = function (Board,x,y,moves) {
 
-        var i = 0; var j = 0;
+        var i = -1; var j = 1;
 
         while (i+x-1 >= 0 && j+y+1 < Board.board[0].length) {
-                if ( Board.isEmpty(Board,i+x-1,j+y+1) ) {
-                        moves.push((i+x-1)+','+(j+y+1));
+                if( Board.isEnemy(Board,x,y,i+x,j+y) ) {
+                        moves.push((i+x)+','+(j+y));
+                        break;
+                } else if ( Board.isEmpty(Board,i+x,j+y) ) {
+                        moves.push((i+x)+','+(j+y));
                         i--; j++;
                 } else {
                         break;
@@ -304,72 +341,105 @@ ChessBoard.prototype.moveNE = function (Board,x,y,moves) {
 
 ChessBoard.prototype.moveN1 = function (Board,x,y,moves) {
 
-        if( Board.isEmpty(Board,x-1,y) && (x-1) >= 0 ) {
-                moves.push((x-1)+ ',' +y);
+        if ((x-1) >= 0) {
+                if( Board.isEnemy(Board,x,y,x-1,y) ) {
+                        moves.push((x-1)+','+y);
+                        return moves;
+                } else if( Board.isEmpty(Board,x-1,y) ) {
+                        moves.push((x-1)+ ',' +y);
+                }
         }
-
         return moves;
 };
 
 ChessBoard.prototype.moveS1 = function (Board,x,y,moves) {
 
-        if( Board.isEmpty(Board,x+1,y) && (x+1) < Board.board.length ) {
-                moves.push((x+1)+ ',' +y);
+        if ((x+1) < Board.board.length) {
+                if( Board.isEnemy(Board,x,y,x+1,y) ) {
+                        moves.push((x+1)+','+y);
+                        return moves;
+                } else if( Board.isEmpty(Board,x+1,y) ) {
+                        moves.push((x+1)+ ',' +y);
+                }
         }
-
         return moves;
 };
 
 ChessBoard.prototype.moveW1 = function (Board,x,y,moves) {
 
-        if( Board.isEmpty(Board,x,y-1) && (y-1) >= 0 ) {
-                moves.push(x+ ',' +(y-1));
+        if ((y-1) >= 0) {
+                if( Board.isEnemy(Board,x,y,x,y-1) ) {
+                        moves.push(x+','+(y-1));
+                        return moves;
+                } else if( Board.isEmpty(Board,x,y-1) ) {
+                        moves.push(x+ ',' +(y-1));
+                }
         }
-
         return moves;
 };
 
 ChessBoard.prototype.moveE1 = function (Board,x,y,moves) {
 
-        if( Board.isEmpty(Board,x,j) && (y+1) < Board.board[0].length ) {
-                moves.push(x+ ',' +(y+1));
+        if ((y+1) < Board.board[0].length) {
+                if( Board.isEnemy(Board,x,y,x,y+1) ) {
+                        moves.push(x+','+(y+1));
+                        return moves;
+                } else if( Board.isEmpty(Board,x,j) ) {
+                        moves.push(x+ ',' +(y+1));
+                }
         }
-
         return moves;
 };
 
 ChessBoard.prototype.moveNW1 = function (Board,x,y,moves) {
 
-        if ( Board.isEmpty(Board,x-1,y-1) && (x-1) >= 0 && (y-1) >= 0 ) {
-                moves.push((x-1)+','+(y-1));
+        if ((x-1) >= 0 && (y-1) >= 0) {
+                if( Board.isEnemy(Board,x,y,x-1,y-1) ) {
+                        moves.push((x-1)+','+(y-1));
+                        return moves;
+                } else  if ( Board.isEmpty(Board,x-1,y-1) ) {
+                        moves.push((x-1)+','+(y-1));
+                }
         }
         return moves;
 };
 
 ChessBoard.prototype.moveSE1 = function (Board,x,y,moves) {
 
-        if ( Board.isEmpty(Board,x+1,y+1) && (x+1) < Board.board.length && (y+1) < Board.board[0].length ) {
-                moves.push((x+1)+','+(y+1));
+        if ((x+1) < Board.board.length && (y+1) < Board.board[0].length) {
+                if( Board.isEnemy(Board,x,y,x+1,y+1) ) {
+                        moves.push((x+1)+','+(y+1));
+                        return moves;
+                } else  if ( Board.isEmpty(Board,x+1,y+1) ) {
+                        moves.push((x+1)+','+(y+1));
+                }
         }
         return moves;
 };
 
 ChessBoard.prototype.moveSW1 = function (Board,x,y,moves) {
 
-        if ( Board.isEmpty(Board,x+1,y-1) && (x+1) < Board.board.length && (y-1) >= 0 ) {
-                moves.push((x+1)+','+(y-1));
+        if ((x+1) < Board.board.length && (y-1) >= 0) {
+                if( Board.isEnemy(Board,x,y,x+1,y-1) ) {
+                        moves.push((x+1)+','+(y-1));
+                        return moves;
+                } else  if ( Board.isEmpty(Board,x+1,y-1) ) {
+                        moves.push((x+1)+','+(y-1));
+                }
         }
         return moves;
 };
 
 ChessBoard.prototype.moveNE1 = function (Board,x,y,moves) {
-
-        if ( Board.isEmpty(Board,x-1,y+1) && (x-1) >= 0 && (y+1) < Board.board[0].length ) {
-                moves.push((x-1)+','+(y+1));
-        }
+        if ((x-1) >= 0 && (y+1) < Board.board[0].length) {
+                if( Board.isEnemy(Board,x,y,x-1,y+1) ) {
+                        moves.push((x-1)+','+(y+1));
+                        return moves;
+                } else if ( Board.isEmpty(Board,x-1,y+1) ) {
+                        moves.push((x-1)+','+(y+1));
+                }
         return moves;
 };
-
 
 var ChessBoard1 = new ChessBoard (8,8);
 
