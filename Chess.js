@@ -438,6 +438,7 @@ ChessBoard.prototype.moveNE1 = function (Board,x,y,moves) {
                 } else if ( Board.isEmpty(Board,x-1,y+1) ) {
                         moves.push((x-1)+','+(y+1));
                 }
+        }
         return moves;
 };
 
@@ -450,4 +451,3 @@ ChessBoard1.setPiece(ChessBoard1,4,4,'Q',1); //test piece
 ChessBoard1.displayBoard(ChessBoard1);
 
 ChessBoard1.displayMoves(ChessBoard1.movesPiece(ChessBoard1,4,4),ChessBoard1); //display moves for 4,4
-
