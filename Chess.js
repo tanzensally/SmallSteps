@@ -19,10 +19,10 @@ var ChessPiece = function (id,type,player) {
 
 ChessBoard.prototype.setBoard = function(board,x,y) {
 
-        for(var i = 0; i < x; i++) {
-                board[i] = [];
-                for(var j = 0; j  < y; j++) {
-                        board[i][j] = null;
+        for(var j = 0; j < y; j++) {
+                board[j] = [];
+                for(var i = 0; i  < x; i++) {
+                        board[j][i] = null;
                 }
         }
         return board;
@@ -34,7 +34,7 @@ ChessBoard.prototype.setBoard = function(board,x,y) {
 ChessBoard.prototype.setPiece = function(Board,x,y,type,player) {
         var piece = new ChessPiece(Board.ids+1,type,player);
         Board.ids++;
-        Board.board[x][y] = piece;
+        Board.board[y][x] = piece;
 };
 
 
@@ -43,38 +43,39 @@ ChessBoard.prototype.setPiece = function(Board,x,y,type,player) {
 ChessBoard.prototype.setStdBoard = function (Board) {
 
         for(var i = 0; i < 8; i++) {
-                Board.setPiece(Board,1,i,'P',1);
-                Board.setPiece(Board,6,i,'P',2);
+                Board.setPiece(Board,i,1,'P',1);
+                Board.setPiece(Board,i,6,'P',2);
         }
 
-        Board.setPiece(Board,0,0,'R',1); Board.setPiece(Board,0,7,'R',1);
-        Board.setPiece(Board,7,0,'R',2); Board.setPiece(Board,7,7,'R',2);
+        Board.setPiece(Board,0,0,'R',1); Board.setPiece(Board,7,0,'R',1);
+        Board.setPiece(Board,0,7,'R',2); Board.setPiece(Board,7,7,'R',2);
 
-        Board.setPiece(Board,0,1,'N',1); Board.setPiece(Board,0,6,'N',1);
-        Board.setPiece(Board,7,1,'N',2); Board.setPiece(Board,7,6,'N',2);
+        Board.setPiece(Board,1,0,'N',1); Board.setPiece(Board,6,0,'N',1);
+        Board.setPiece(Board,1,7,'N',2); Board.setPiece(Board,6,7,'N',2);
 
-        Board.setPiece(Board,0,2,'B',1); Board.setPiece(Board,0,5,'B',1);
-        Board.setPiece(Board,7,2,'B',2); Board.setPiece(Board,7,5,'B',2);
+        Board.setPiece(Board,2,0,'B',1); Board.setPiece(Board,5,0,'B',1);
+        Board.setPiece(Board,2,7,'B',2); Board.setPiece(Board,5,7,'B',2);
 
-        Board.setPiece(Board,0,3,'Q',1); Board.setPiece(Board,7,3,'Q',2);
+        Board.setPiece(Board,3,0,'Q',1); Board.setPiece(Board,3,7,'Q',2);
         
-        Board.setPiece(Board,0,4,'K',1); Board.setPiece(Board,7,4,'K',2);
+        Board.setPiece(Board,4,0,'K',1); Board.setPiece(Board,4,7,'K',2);
 
 };
 
 
-//display the entire chessboard, based on the type property, can be changed for id or player
+//display the entire chessboard, based on the type property, can be changed for id, player or possition
 
 ChessBoard.prototype.displayBoard = function (Board) {
 
-        for(var i = 0; i < Board.board.length; i++) {
-                for(var j = 0; j < Board.board[0].length; j++) {
-                        if(Board.board[i][j] == null){
+        for(var j = 0; j < Board.board.length; j++) {
+                for(var i = 0; i < Board.board[0].length; i++) {
+                        if(Board.board[j][i] == null){
                                 process.stdout.write('- ');
                         } else {
-                                process.stdout.write(Board.board[i][j].type + ' ');
-                                //process.stdout.write(Board.board[i][j].id + ' ');
-                                //process.stdout.write(Board.board[i][j].player + ' ');
+				process.stdout.write(Board.board[j][i].type + ' ');
+                                //process.stdout.write(Board.board[j][i].id + ' ');
+                                //process.stdout.write(Board.board[j][i].player + ' ');
+				//process.stdout.write(i+","+j + ' ');
                         }
                 }
                 process.stdout.write('\n');
@@ -104,6 +105,8 @@ ChessBoard.prototype.displayMoves = function(movesPiece, Board) {
         var displayX = [];
         var displayY = [];
 
+	//the following two loops split the list of moves into X and Y, then marks an 'x' where said possition is
+
         for(var i = 0; i < moves.length; i++) {
                 display = moves[i].split(',');
                 displayX.push(display[0]);
@@ -111,18 +114,19 @@ ChessBoard.prototype.displayMoves = function(movesPiece, Board) {
         }
 
         for(var i = 0; i < displayX.length; i++) {
-                displayBoard[displayX[i]][displayY[i]] = 'x';
+                displayBoard[displayY[i]][displayX[i]] = 'x';
         }
+
         process.stdout.write('\n');
 
-        for(var i = 0; i < displayBoard.length; i++) {
-                for(var j = 0; j < displayBoard[0].length; j++) {
-                        if(displayBoard[i][j] == null){
+        for(var j = 0; j < displayBoard.length; j++) {
+                for(var i = 0; i < displayBoard[0].length; i++) {
+                        if(displayBoard[j][i] == null){
                                 process.stdout.write('- ');
-                        } else if (displayBoard[i][j] == 'x') {
+                        } else if (displayBoard[j][i] == 'x') {
                                 process.stdout.write('x ');
                         } else {
-                                process.stdout.write(displayBoard[i][j].type + ' ');
+                                process.stdout.write(displayBoard[j][i].type + ' ');
                         }
                 }
                 process.stdout.write('\n');
@@ -139,7 +143,7 @@ ChessBoard.prototype.displayMoves = function(movesPiece, Board) {
 //isEmpty?
 
 ChessBoard.prototype.isEmpty = function (Board,x,y) {
-        if(Board.board[x][y] == null) {
+        if(Board.board[y][x] == null) {
                 return true;
         } else {
                 return false;
@@ -149,8 +153,8 @@ ChessBoard.prototype.isEmpty = function (Board,x,y) {
 //isEnemy?
 
 ChessBoard.prototype.isEnemy = function (Board,x,y,i,j) {
-        if ( Board.board[i][j] != null ) {
-                if (Board.board[x][y].player != Board.board[i][j].player) {
+        if ( Board.board[j][i] != null ) {
+                if (Board.board[y][x].player != Board.board[j][i].player) {
                         return true;
                 } else {
                         return false;
@@ -165,7 +169,7 @@ ChessBoard.prototype.isEnemy = function (Board,x,y,i,j) {
 ChessBoard.prototype.movesPiece = function(Board,x,y) {
 
         var moves = [];
-        var type = Board.board[x][y].type;
+        var type = Board.board[y][x].type;
 
         switch(type) {
 
@@ -201,9 +205,8 @@ ChessBoard.prototype.movesPiece = function(Board,x,y) {
 };
 
 //standard directions: NSEW. cross, diagonal and one at a time
-//+x or +i go south, +y or +j go east
 
-ChessBoard.prototype.moveN = function(Board,x,y,moves) {
+ChessBoard.prototype.moveE = function(Board,x,y,moves) {
 
         for (var i = (x-1); i >= 0; i--) {
                 if( Board.isEnemy(Board,x,y,i,y) ) {
@@ -219,9 +222,9 @@ ChessBoard.prototype.moveN = function(Board,x,y,moves) {
         return moves;
 };
 
-ChessBoard.prototype.moveS = function(Board,x,y,moves) {
+ChessBoard.prototype.moveW = function(Board,x,y,moves) {
 
-        for (var i = (x+1); i < Board.board.length; i++) {
+        for (var i = (x+1); i < Board.board[0].length; i++) {
                 if( Board.isEnemy(Board,x,y,i,y) ) {
                         moves.push(i+ ',' +y);
                         break;
@@ -235,7 +238,7 @@ ChessBoard.prototype.moveS = function(Board,x,y,moves) {
         return moves;
 };
 
-ChessBoard.prototype.moveW = function (Board,x,y,moves) {
+ChessBoard.prototype.moveN = function (Board,x,y,moves) {
 
         for (var j = (y-1); j >= 0; j--) {
                 if( Board.isEnemy(Board,x,y,x,j) ) {
@@ -251,9 +254,9 @@ ChessBoard.prototype.moveW = function (Board,x,y,moves) {
         return moves;
 };
 
-ChessBoard.prototype.moveE = function (Board,x,y,moves) {
+ChessBoard.prototype.moveS = function (Board,x,y,moves) {
 
-        for (var j = (y+1); j < Board.board[0].length; j++) {
+        for (var j = (y+1); j < Board.board.length; j++) {
                 if( Board.isEnemy(Board,x,y,x,j) ) {
                         moves.push(x+ ',' +j);
                         break;
@@ -289,7 +292,7 @@ ChessBoard.prototype.moveSE = function (Board,x,y,moves) {
 
         var i = 1; var j = 1;
 
-        while (i+x < Board.board.length && j+y < Board.board[0].length) {
+        while (i+x < Board.board[0].length && j+y < Board.board.length) {
                 if( Board.isEnemy(Board,x,y,i+x,j+y) ) {
                         moves.push((i+x)+','+(j+y));
                         break;
@@ -303,11 +306,11 @@ ChessBoard.prototype.moveSE = function (Board,x,y,moves) {
         return moves;
 };
 
-ChessBoard.prototype.moveSW = function (Board,x,y,moves) {
+ChessBoard.prototype.moveNE = function (Board,x,y,moves) {
 
         var i = 1; var j = -1;
 
-        while (i+x+1 < Board.board.length && j+y-1 >= 0) {
+        while (i+x+1 < Board.board[0].length && j+y-1 >= 0) {
                 if( Board.isEnemy(Board,x,y,i+x,j+y) ) {
                         moves.push((i+x)+','+(j+y));
                         break;
@@ -321,11 +324,11 @@ ChessBoard.prototype.moveSW = function (Board,x,y,moves) {
         return moves;
 };
 
-ChessBoard.prototype.moveNE = function (Board,x,y,moves) {
+ChessBoard.prototype.moveSW = function (Board,x,y,moves) {
 
         var i = -1; var j = 1;
 
-        while (i+x-1 >= 0 && j+y+1 < Board.board[0].length) {
+        while (i+x-1 >= 0 && j+y+1 < Board.board.length) {
                 if( Board.isEnemy(Board,x,y,i+x,j+y) ) {
                         moves.push((i+x)+','+(j+y));
                         break;
@@ -339,7 +342,7 @@ ChessBoard.prototype.moveNE = function (Board,x,y,moves) {
         return moves;
 };
 
-ChessBoard.prototype.moveN1 = function (Board,x,y,moves) {
+ChessBoard.prototype.moveW1 = function (Board,x,y,moves) {
 
         if ((x-1) >= 0) {
                 if( Board.isEnemy(Board,x,y,x-1,y) ) {
@@ -352,9 +355,9 @@ ChessBoard.prototype.moveN1 = function (Board,x,y,moves) {
         return moves;
 };
 
-ChessBoard.prototype.moveS1 = function (Board,x,y,moves) {
+ChessBoard.prototype.moveE1 = function (Board,x,y,moves) {
 
-        if ((x+1) < Board.board.length) {
+        if ((x+1) < Board.board[0].length) {
                 if( Board.isEnemy(Board,x,y,x+1,y) ) {
                         moves.push((x+1)+','+y);
                         return moves;
@@ -365,7 +368,7 @@ ChessBoard.prototype.moveS1 = function (Board,x,y,moves) {
         return moves;
 };
 
-ChessBoard.prototype.moveW1 = function (Board,x,y,moves) {
+ChessBoard.prototype.moveN1 = function (Board,x,y,moves) {
 
         if ((y-1) >= 0) {
                 if( Board.isEnemy(Board,x,y,x,y-1) ) {
@@ -378,9 +381,9 @@ ChessBoard.prototype.moveW1 = function (Board,x,y,moves) {
         return moves;
 };
 
-ChessBoard.prototype.moveE1 = function (Board,x,y,moves) {
+ChessBoard.prototype.moveS1 = function (Board,x,y,moves) {
 
-        if ((y+1) < Board.board[0].length) {
+        if ((y+1) < Board.board.length) {
                 if( Board.isEnemy(Board,x,y,x,y+1) ) {
                         moves.push(x+','+(y+1));
                         return moves;
@@ -406,7 +409,7 @@ ChessBoard.prototype.moveNW1 = function (Board,x,y,moves) {
 
 ChessBoard.prototype.moveSE1 = function (Board,x,y,moves) {
 
-        if ((x+1) < Board.board.length && (y+1) < Board.board[0].length) {
+        if ((x+1) < Board.board[0].length && (y+1) < Board.board.length) {
                 if( Board.isEnemy(Board,x,y,x+1,y+1) ) {
                         moves.push((x+1)+','+(y+1));
                         return moves;
@@ -417,9 +420,9 @@ ChessBoard.prototype.moveSE1 = function (Board,x,y,moves) {
         return moves;
 };
 
-ChessBoard.prototype.moveSW1 = function (Board,x,y,moves) {
+ChessBoard.prototype.moveNW1 = function (Board,x,y,moves) {
 
-        if ((x+1) < Board.board.length && (y-1) >= 0) {
+        if ((x+1) < Board.board[0].length && (y-1) >= 0) {
                 if( Board.isEnemy(Board,x,y,x+1,y-1) ) {
                         moves.push((x+1)+','+(y-1));
                         return moves;
@@ -430,8 +433,8 @@ ChessBoard.prototype.moveSW1 = function (Board,x,y,moves) {
         return moves;
 };
 
-ChessBoard.prototype.moveNE1 = function (Board,x,y,moves) {
-        if ((x-1) >= 0 && (y+1) < Board.board[0].length) {
+ChessBoard.prototype.moveSE1 = function (Board,x,y,moves) {
+        if ((x-1) >= 0 && (y+1) < Board.board.length) {
                 if( Board.isEnemy(Board,x,y,x-1,y+1) ) {
                         moves.push((x-1)+','+(y+1));
                         return moves;
@@ -442,7 +445,7 @@ ChessBoard.prototype.moveNE1 = function (Board,x,y,moves) {
         return moves;
 };
 
-var ChessBoard1 = new ChessBoard (8,8);
+var ChessBoard1 = new ChessBoard (8,10);
 
 ChessBoard1.setStdBoard(ChessBoard1);
 
