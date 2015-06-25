@@ -1,4 +1,55 @@
+<!DOCTYPE html>
+<html>
+<body>
+<canvas id="canvasTest" width="900" height="900"></canvas>
+<script>
+
 //ChessBoardTest3 - By eagleangelo and some nice people on the pbsideachannel (you know who you are)
+
+//create a background board, with colors and everything
+
+canvas = document.getElementById('canvasTest');
+
+rectSize = 100;
+boardSizeX = 8;
+boardSizeY = 8;
+
+
+color1 = 'lightgreen';
+color2 = 'skyblue';
+
+boardBG = [];
+boardL1 = [];
+
+for (var j = 0, len1 = boardSizeY; j < len1; j++) {
+	boardBG[j] = [];
+	boardL1[j] = [];
+	for (var i = 0, len2 = boardSizeY; i < len2; i++) {
+
+		var rect = canvas.getContext('2d');
+		var pos = canvas.getContext('2d');
+
+		rect.fillStyle = j % 2 == 0 ? color1 : color2;
+		rect.fillRect( rectSize * (i % boardSizeX) + 50, rectSize * (j % boardSizeY) + 50, rectSize, rectSize);
+
+		pos.font = "12px serif";
+		pos.fillStyle = "black";
+		pos.fillText(i+","+j, rectSize * (i % boardSizeX) + 50, rectSize * (j % boardSizeY) + 60);
+
+		boardBG[j][i] = rect;
+		color1 = [color2, color2 = color1][0];
+	}
+
+}
+
+//test square
+
+boardBG[0][0].fillStyle = 'black';
+boardBG[0][0].fillRect(50,50,rectSize,rectSize);
+
+document.body.appendChild(canvas);
+
+
 
 //ChessBoard and Chesspiece prototypes
 
@@ -63,9 +114,29 @@ ChessBoard.prototype.setStdBoard = function (Board) {
 };
 
 
+
 //display the entire chessboard, based on the type property, can be changed for id, player or possition
 
 ChessBoard.prototype.displayBoard = function (Board) {
+
+        for(var j = 0; j < Board.board.length; j++) {
+                for(var i = 0; i < Board.board[0].length; i++) {
+                        if(Board.board[j][i] != null){
+				var L1Piece = canvas.getContext('2d');
+
+				L1Piece.fillStyle = 'Black';
+				L1Piece.fillRect( rectSize * (i % boardSizeX) + 50, rectSize * (j % boardSizeY) + 50, rectSize, rectSize);
+				
+				boardL1[j][i] = L1Piece;
+                        }
+                }
+        }
+};
+
+
+//display the entire chessboard on the console (needs Node.js), based on the type property, can be changed for id, player or possition
+
+ChessBoard.prototype.displayBoardConsole = function (Board) {
 
         for(var j = 0; j < Board.board.length; j++) {
                 for(var i = 0; i < Board.board[0].length; i++) {
@@ -87,7 +158,7 @@ ChessBoard.prototype.displayBoard = function (Board) {
 
 //display the moves for a given piece; needs the list of moves from MovesPiece()
 
-ChessBoard.prototype.displayMoves = function(movesPiece, Board) {
+ChessBoard.prototype.displayMovesConsole = function(movesPiece, Board) {
 
         var moves = movesPiece;
 
@@ -445,7 +516,7 @@ ChessBoard.prototype.moveSE1 = function (Board,x,y,moves) {
         return moves;
 };
 
-var ChessBoard1 = new ChessBoard (8,10);
+var ChessBoard1 = new ChessBoard (boardSizeX,boardSizeY);
 
 ChessBoard1.setStdBoard(ChessBoard1);
 
@@ -453,4 +524,8 @@ ChessBoard1.setPiece(ChessBoard1,4,4,'Q',1); //test piece
 
 ChessBoard1.displayBoard(ChessBoard1);
 
-ChessBoard1.displayMoves(ChessBoard1.movesPiece(ChessBoard1,4,4),ChessBoard1); //display moves for 4,4
+//ChessBoard1.displayMoves(ChessBoard1.movesPiece(ChessBoard1,4,4),ChessBoard1); //display moves for 4,4
+
+</script>
+</body>
+</html>
