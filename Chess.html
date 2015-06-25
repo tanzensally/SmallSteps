@@ -6,20 +6,22 @@
 
 //ChessBoardTest3 - By eagleangelo and some nice people on the pbsideachannel (you know who you are)
 
-//create a background board, with colors and everything
+//create a canvas thing (soon to be turned into a function)
 
 canvas = document.getElementById('canvasTest');
+document.body.appendChild(canvas);
+
+//create a board thing (soon to be turned into a function)
 
 rectSize = 100;
 boardSizeX = 8;
 boardSizeY = 8;
 
-
 color1 = 'lightgreen';
 color2 = 'skyblue';
 
-boardBG = [];
-boardL1 = [];
+boardBG = []; //(background layer)
+boardL1 = []; //(pieces layer)
 
 for (var j = 0, len1 = boardSizeY; j < len1; j++) {
 	boardBG[j] = [];
@@ -44,12 +46,11 @@ for (var j = 0, len1 = boardSizeY; j < len1; j++) {
 
 //test square
 
-boardBG[0][0].fillStyle = 'black';
-boardBG[0][0].fillRect(50,50,rectSize,rectSize);
-
-document.body.appendChild(canvas);
+//boardBG[0][0].fillStyle = 'black';
+//boardBG[0][0].fillRect(50,50,rectSize,rectSize);
 
 
+//most of the game's engine thing starts here
 
 //ChessBoard and Chesspiece prototypes
 
@@ -115,7 +116,7 @@ ChessBoard.prototype.setStdBoard = function (Board) {
 
 
 
-//display the entire chessboard, based on the type property, can be changed for id, player or possition
+//display the entire chessboard, based on the type property (incomplete, must make sprites for the pieces)
 
 ChessBoard.prototype.displayBoard = function (Board) {
 
@@ -124,8 +125,8 @@ ChessBoard.prototype.displayBoard = function (Board) {
                         if(Board.board[j][i] != null){
 				var L1Piece = canvas.getContext('2d');
 
-				L1Piece.fillStyle = 'Black';
-				L1Piece.fillRect( rectSize * (i % boardSizeX) + 50, rectSize * (j % boardSizeY) + 50, rectSize, rectSize);
+				L1Piece.fillStyle = Board.board[j][i].player == 1 ? 'blue' : 'green'
+				L1Piece.fillRect( rectSize * (i % boardSizeX) + 50 + rectSize/4 , rectSize * (j % boardSizeY) + 50 + rectSize/4, rectSize/2, rectSize/2);
 				
 				boardL1[j][i] = L1Piece;
                         }
@@ -158,6 +159,44 @@ ChessBoard.prototype.displayBoardConsole = function (Board) {
 
 //display the moves for a given piece; needs the list of moves from MovesPiece()
 
+ChessBoard.prototype.displayMoves = function(movesPiece, Board) {
+
+        var moves = movesPiece;
+
+//need to turn this into text...somewhere...
+
+	/*
+	process.stdout.write(moves.length +' available moves.\n')
+
+        for(var i = 0; i < moves.length; i++) {
+                process.stdout.write(moves[i]+ '; ');
+        }
+	*/
+
+        var displayBoard = JSON.parse(JSON.stringify(Board.board));
+
+        var display = [];
+        var displayX = [];
+        var displayY = [];
+
+	//the following loops split the list of moves into X and Y, then paints a square black where said possition is
+
+        for(var i = 0; i < moves.length; i++) {
+                display = moves[i].split(',');
+                displayX.push(display[0]);
+                displayY.push(display[1]);
+        }
+
+        for(var i = 0; i < displayX.length; i++) {
+                boardBG[displayY[i]][displayX[i]].fillStyle = 'black';
+		boardBG[displayY[i]][displayX[i]].fillRect(rectSize * (displayX[i] % boardSizeX) + 50, rectSize * (displayY[i] % boardSizeY) + 50,rectSize,rectSize);
+        }
+
+};
+
+
+//display the moves for a given piece on the console (needs Node.js); needs the list of moves from MovesPiece()
+
 ChessBoard.prototype.displayMovesConsole = function(movesPiece, Board) {
 
         var moves = movesPiece;
@@ -176,7 +215,7 @@ ChessBoard.prototype.displayMovesConsole = function(movesPiece, Board) {
         var displayX = [];
         var displayY = [];
 
-	//the following two loops split the list of moves into X and Y, then marks an 'x' where said possition is
+	//the following loops split the list of moves into X and Y, then marks an 'x' where said possition is
 
         for(var i = 0; i < moves.length; i++) {
                 display = moves[i].split(',');
@@ -524,7 +563,7 @@ ChessBoard1.setPiece(ChessBoard1,4,4,'Q',1); //test piece
 
 ChessBoard1.displayBoard(ChessBoard1);
 
-//ChessBoard1.displayMoves(ChessBoard1.movesPiece(ChessBoard1,4,4),ChessBoard1); //display moves for 4,4
+ChessBoard1.displayMoves(ChessBoard1.movesPiece(ChessBoard1,4,4),ChessBoard1); //display moves for 4,4
 
 </script>
 </body>
