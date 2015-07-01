@@ -127,6 +127,30 @@ ChessBoard.prototype.displayBoard = function (Board) {
         for(var j = 0; j < Board.board.length; j++) {
                 for(var i = 0; i < Board.board[0].length; i++) {
                         if(Board.board[j][i] != null){
+                        	
+                        	var L1Piece = canvas.getContext('2d');
+
+				boardL1[j][i] = new Image();
+				
+				//so, I have no idea of what I just did...is this what you call a nested function or whatever?
+				boardL1[j][i].onload =  ( function () {
+
+					var thisI = i;
+					var thisJ = j;
+					var thisBoardSizeX = boardSizeX;
+					var thisBoardSizeY = boardSizeY;
+
+					return function () {
+						L1Piece.drawImage(this, rectSize * (thisI % thisBoardSizeX) + 50, rectSize * (thisJ % thisBoardSizeY) + 50, 100, 100);
+
+					};
+				}());
+
+				boardL1[j][i].src = 'http://www.charbase.com/images/glyph/9817';
+
+                        	/*
+                        	Old method, disregard it
+                        	
 				var L1Piece = canvas.getContext('2d');
 
 				L1Piece.fillStyle = Board.board[j][i].player == 1 ? 'blue' : 'green'
@@ -138,7 +162,8 @@ ChessBoard.prototype.displayBoard = function (Board) {
 
 				boardL1[j][i] = L1Piece;
 				boardL3[j][i] = pieceTxt;
-                        }
+                        	*/
+                        }	
                 }
         }
 };
