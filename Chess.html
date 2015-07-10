@@ -166,7 +166,7 @@ ChessBoard.prototype.displayBoard = function (Board, CanvasObject) {
 					return function () {
 						L1Piece.drawImage(this, thisRectSize * (thisI % thisBoardSizeX) + 50, thisRectSize * (thisJ % thisBoardSizeY) + 50, 100, 100);
 					};
-				}());
+				}.bind(this)());
 	
 				img.src = 'http://www.charbase.com/images/glyph/9817';
 
