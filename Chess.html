@@ -26,10 +26,12 @@ var CanvasObject = function (rectSize, boardSizeX, boardSizeY, color1, color2) {
 	this.color1 = color1;
 	this.color2 = color2;
 
-	this.layers = this.setCanvasBoard(rectSize,boardSizeX,boardSizeY,color1,color2);
+	this.layers = [];
+	this.layers = this.setCanvasBoard(this.layers,rectSize,boardSizeX,boardSizeY,color1,color2);
+
 };
 
-CanvasObject.prototype.setCanvasBoard = function (rectSize,boardSizeX,boardSizeY,color1,color2) {
+CanvasObject.prototype.setCanvasBoard = function (layers,rectSize,boardSizeX,boardSizeY,color1,color2) {
 
 	boardL0 = []; //(background layer)
 	boardL1 = []; //(pieces layer)
@@ -51,9 +53,9 @@ CanvasObject.prototype.setCanvasBoard = function (rectSize,boardSizeX,boardSizeY
 			rect.fillStyle = j % 2 == 0 ? color1 : color2;
 			rect.fillRect( rectSize * (i % boardSizeX) + 50, rectSize * (j % boardSizeY) + 50, rectSize, rectSize);
 
-			pos.font = "12px serif";
-			pos.fillStyle = "black";
-			pos.fillText(i+","+j, rectSize * (i % boardSizeX) + 50, rectSize * (j % boardSizeY) + 60);
+			pos.font = '12px serif';
+			pos.fillStyle = 'black';
+			pos.fillText(i+','+j, rectSize * (i % boardSizeX) + 50, rectSize * (j % boardSizeY) + 60);
 
 			boardL0[j][i] = rect;
 			boardL2[j][i] = pos;
@@ -62,8 +64,9 @@ CanvasObject.prototype.setCanvasBoard = function (rectSize,boardSizeX,boardSizeY
 		}
 
 	}
+	
+	layers = [boardL0,boardL1,boardL2,boardL3];
 
-	layers = {boardL0,boardL1,boardL2,boardL3};
 	return layers;
 };
 
@@ -133,47 +136,42 @@ ChessBoard.prototype.setStdBoard = function (Board) {
 
 //display the entire chessboard, based on the type property (incomplete, must make sprites for the pieces)
 
-ChessBoard.prototype.displayBoard = function (Board) {
+ChessBoard.prototype.displayBoard = function (Board, CanvasObject) {
 
         for(var j = 0; j < Board.board.length; j++) {
                 for(var i = 0; i < Board.board[0].length; i++) {
                         if(Board.board[j][i] != null){
                         	
                         	var L1Piece = canvas.getContext('2d');
-
-				boardL1[j][i] = new Image();
 				
-				//so, I have no idea of what I just did...is this what you call a nested function or whatever?
-				boardL1[j][i].onload =  ( function () {
+				var BoardL1 = CanvasObject.layers[1];
+				var img = new Image();
 
+				//this one doesn't work of course
+/*
+				img.onload = function () {
+					L1Piece.drawImage(img, Board.rectSize * (i % Board.boardSizeX) + 50, Board.rectSize * (j % Board.boardSizeY) + 50, 100, 100);
+				}
+*/
+				//this is where the alarms go off, I had to use an anonymous instant function or something previously to make it work, but it gets kind of messy
+
+				img.onload =  ( function () {
+					
 					var thisI = i;
 					var thisJ = j;
-					var thisBoardSizeX = boardSizeX;
-					var thisBoardSizeY = boardSizeY;
+					var thisBoardSizeX = Board.boardSizeX;
+					var thisBoardSizeY = Board.boardSizeY;
+					var thisRectSize = Board.rectSize;
 
 					return function () {
-						L1Piece.drawImage(this, rectSize * (thisI % thisBoardSizeX) + 50, rectSize * (thisJ % thisBoardSizeY) + 50, 100, 100);
-
+						L1Piece.drawImage(this, thisRectSize * (thisI % thisBoardSizeX) + 50, thisRectSize * (thisJ % thisBoardSizeY) + 50, 100, 100);
 					};
 				}());
+	
+				img.src = 'http://www.charbase.com/images/glyph/9817';
 
-				boardL1[j][i].src = 'http://www.charbase.com/images/glyph/9817';
+				BoardL1[j][i] = img;
 
-                        	/*
-                        	Old method, disregard it
-                        	
-				var L1Piece = canvas.getContext('2d');
-
-				L1Piece.fillStyle = Board.board[j][i].player == 1 ? 'blue' : 'green'
-				L1Piece.fillRect( rectSize * (i % boardSizeX) + 50 + rectSize/4 , rectSize * (j % boardSizeY) + 50 + rectSize/4, rectSize/2, rectSize/2);
-				
-				pieceTxt.font = "12px serif";
-				pieceTxt.fillStyle = "white";
-				pieceTxt.fillText("P", rectSize * (i % boardSizeX) + 50 + rectSize/2 , rectSize * (j % boardSizeY) + 50 + rectSize/2);
-
-				boardL1[j][i] = L1Piece;
-				boardL3[j][i] = pieceTxt;
-                        	*/
                         }	
                 }
         }
@@ -604,11 +602,11 @@ ChessBoard.prototype.moveSE1 = function (Board,x,y,moves) {
 var ChessBoard1 = new ChessBoard (XboardSizeX,XboardSizeY);
 var CanvasObject1 = new CanvasObject (XrectSize, XboardSizeX, XboardSizeY, Xcolor1, Xcolor2);
 
-//ChessBoard1.setStdBoard(ChessBoard1);
+ChessBoard1.setStdBoard(ChessBoard1);
 
-//ChessBoard1.setPiece(ChessBoard1,4,4,'Q',1); //test piece
+ChessBoard1.setPiece(ChessBoard1,4,4,'Q',1); //test piece
 
-//ChessBoard1.displayBoard(ChessBoard1);
+ChessBoard1.displayBoard(ChessBoard1, CanvasObject1);
 
 //ChessBoard1.displayMoves(ChessBoard1.movesPiece(ChessBoard1,4,4),ChessBoard1); //display moves for 4,4
 
