@@ -29,6 +29,10 @@ var CanvasObject = function (rectSize, boardSizeX, boardSizeY, color1, color2) {
 	this.layers = [];
 	this.layers = this.setCanvasBoard(this.layers,rectSize,boardSizeX,boardSizeY,color1,color2);
 
+	window.addEventListener('PieceReady', function(ev){
+		this.setPieceIMG(ev.src, ev.arrayIMG, ev.x, ev.y, ev.sizeX, ev.sizeY, ev.sqrSize);
+	}.bind(this));
+	
 };
 
 CanvasObject.prototype.setCanvasBoard = function (layers,rectSize,boardSizeX,boardSizeY,color1,color2) {
@@ -132,27 +136,61 @@ ChessBoard.prototype.setStdBoard = function (Board) {
 
 };
 
+CanvasObject.prototype.setPieceIMG = function(src,arrayIMG,x,y,sizeX,sizeY,sqrSize) {
+	
+	var L1Piece = canvas.getContext('2d');
 
+	var img = arrayIMG[y][x];
+	img.setAttribute('src', src);
+	//img.src = src;
+	L1Piece.drawImage(img, sqrSize * (x % sizeX) + 50, sqrSize * (y % sizeY) + 50, 100, 100)
+};
+
+CanvasObject.prototype.preload = function(src, arrayIMG, x, y, sizeX, sizeY, sqrSize, type) {
+
+	var img = new Image();
+	arrayIMG[y][x] = img;
+
+	img.onload = function () {
+		ev1 = new Event(type + 'Ready');
+		ev1.src = src;
+		ev1.arrayIMG = arrayIMG;
+		ev1.x = x;
+		ev1.y = y;
+		ev1.sizeX = sizeX;
+		ev1.sizeY = sizeY;
+		ev1.sqrSize = sqrSize;
+		window.dispatchEvent(ev1);
+	};
+	img.src = src;
+
+};
 
 //display the entire chessboard, based on the type property (incomplete, must make sprites for the pieces)
 
-ChessBoard.prototype.displayBoard = function (Board, CanvasObject) {
+CanvasObject.prototype.displayBoard = function (Board, CanvasObject) {
 
         for(var j = 0; j < Board.board.length; j++) {
                 for(var i = 0; i < Board.board[0].length; i++) {
                         if(Board.board[j][i] != null){
-                        	
+
+				var BoardL1 = CanvasObject.layers[1];
+				srcIMG = 'http://www.charbase.com/images/glyph/9817';
+
+				this.preload(srcIMG, BoardL1, i, j, CanvasObject.boardSizeX, CanvasObject.boardSizeY, CanvasObject.rectSize, 'Piece');
+
+/*                        	
                         	var L1Piece = canvas.getContext('2d');
 				
 				var BoardL1 = CanvasObject.layers[1];
 				var img = new Image();
 
 				//this one doesn't work of course
-/*
+
 				img.onload = function () {
 					L1Piece.drawImage(img, Board.rectSize * (i % Board.boardSizeX) + 50, Board.rectSize * (j % Board.boardSizeY) + 50, 100, 100);
 				}
-*/
+
 				//this is where the alarms go off, I had to use an anonymous instant function or something previously to make it work, but it gets kind of messy
 
 				img.onload =  ( function () {
@@ -171,7 +209,7 @@ ChessBoard.prototype.displayBoard = function (Board, CanvasObject) {
 				img.src = 'http://www.charbase.com/images/glyph/9817';
 
 				BoardL1[j][i] = img;
-
+*/
                         }	
                 }
         }
@@ -606,9 +644,9 @@ ChessBoard1.setStdBoard(ChessBoard1);
 
 ChessBoard1.setPiece(ChessBoard1,4,4,'Q',1); //test piece
 
-ChessBoard1.displayBoard(ChessBoard1, CanvasObject1);
+CanvasObject1.displayBoard(ChessBoard1, CanvasObject1);
 
-//ChessBoard1.displayMoves(ChessBoard1.movesPiece(ChessBoard1,4,4),ChessBoard1); //display moves for 4,4
+//CanvasObject.displayMoves(ChessBoard1.movesPiece(ChessBoard1,4,4),ChessBoard1); //display moves for 4,4
 
 </script>
 </body>
