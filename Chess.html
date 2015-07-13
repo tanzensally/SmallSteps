@@ -17,9 +17,11 @@ XboardSizeY = 8;
 Xcolor1 = 'skyblue';
 Xcolor2 = 'lightgreen';
 
+
 //create a board thing
 
 var CanvasObject = function (rectSize, boardSizeX, boardSizeY, color1, color2) {
+
 	this.rectSize = rectSize;
 	this.boardSizeX = boardSizeX;
 	this.boardSizeY = boardSizeY;
@@ -28,13 +30,19 @@ var CanvasObject = function (rectSize, boardSizeX, boardSizeY, color1, color2) {
 
 	this.layers = [];
 	this.layers = this.setCanvasBoard(this.layers,rectSize,boardSizeX,boardSizeY,color1,color2);
-
+/*
 	window.addEventListener('PieceReady', function(ev){
 		this.setPieceIMG(ev.src, ev.arrayIMG, ev.x, ev.y, ev.sizeX, ev.sizeY, ev.sqrSize);
 	}.bind(this));
+*/
 
-	
+	window.addEventListener('PieceReady', function(ev){
+		this.setPieceIMG(ev.src);
+	}.bind(this));
+
 };
+
+//set the canvas up and the background
 
 CanvasObject.prototype.setCanvasBoard = function (layers,rectSize,boardSizeX,boardSizeY,color1,color2) {
 
@@ -74,6 +82,110 @@ CanvasObject.prototype.setCanvasBoard = function (layers,rectSize,boardSizeX,boa
 
 	return layers;
 };
+
+
+//provides the source for a given piece type and player
+
+CanvasObject.prototype.getIMGSrcType = function (type, player) {
+
+	var name = type+player;
+	
+	switch (name) {
+
+		case 'P1':
+		name = 'https://cloud.githubusercontent.com/assets/12261709/8661365/49cb22f8-2974-11e5-90ce-519c1c2a1547.png';
+		break;
+
+		case 'P2':
+		name = 'https://cloud.githubusercontent.com/assets/12261709/8661386/65ebed6e-2974-11e5-9b9a-3954b9ec957e.png';
+		break;
+
+		case 'R1':
+		name = 'https://cloud.githubusercontent.com/assets/12261709/8661865/0c18e86a-2978-11e5-97c7-e25bf067bfc5.png';
+		break;
+
+		case 'R2':
+		name = 'https://cloud.githubusercontent.com/assets/12261709/8661871/18f8179a-2978-11e5-9795-8a21f2486cac.png';
+		break;
+
+		case 'N1':
+		name = 'https://cloud.githubusercontent.com/assets/12261709/8661883/31c1b4de-2978-11e5-98b1-2e82d27e98bd.png';
+		break;
+
+		case 'N2':
+		name = 'https://cloud.githubusercontent.com/assets/12261709/8661876/24b9a706-2978-11e5-93a8-e7d11ae1cd79.png';
+		break;
+
+		case 'B1':
+		name = 'https://cloud.githubusercontent.com/assets/12261709/8661897/4aeb035c-2978-11e5-81f1-1746b8853ac1.png';
+		break;
+
+		case 'B2':
+		name = 'https://cloud.githubusercontent.com/assets/12261709/8661893/406081a0-2978-11e5-8690-2f1e33fac4fc.png';
+		break;
+
+		case 'Q1':
+		name = 'https://cloud.githubusercontent.com/assets/12261709/8661420/a4f8f83a-2974-11e5-81e7-7d0fdeb904a0.png';
+		break;
+
+		case 'Q2':
+		name = 'https://cloud.githubusercontent.com/assets/12261709/8661443/c00f1668-2974-11e5-9d36-c8af52bc5e7d.png';
+		break;
+
+		case 'K1':
+		name = 'https://cloud.githubusercontent.com/assets/12261709/8661397/768c5802-2974-11e5-9e34-25c42afeb743.png';
+		break;
+
+		case 'K2':
+		name = 'https://cloud.githubusercontent.com/assets/12261709/8661405/87604f26-2974-11e5-891a-4ed3aa3f87e7.png';
+		break;
+
+		Default:
+		name = 'dummy.png';
+		break;
+	}
+
+	return name;
+
+};
+
+//set the canvas pieces so they can later be displayed
+
+//NOTE!!! HELLO FUTURE ME! PLEASE REMEMBER TO TEST IF WE CAN USE this.layers INSTEAD OF CanvasObject.layers!!! That would save us some work and stupidity
+
+CanvasObject.prototype.setCanvasPieces = function (Board, CanvasObject) {
+
+	var BoardL1 = CanvasObject.layers[1];
+
+        for(var j = 0; j < Board.board.length; j++) {
+                for(var i = 0; i < Board.board[0].length; i++) {
+                        if(Board.board[j][i] != null){
+				var CanvasPiece1 =  new CanvasPiece(Board.board[j][i].type, Board.board[j][i].player);
+				BoardL1[j][i] = CanvasPiece1;
+                        }	
+                }
+        }
+};
+
+
+//make a canvas piece object, it will have and load its img file source once depending on the chesspiece
+
+var CanvasPiece = function (type,player) {
+
+	this.type =  type;
+	this.player = player;
+
+	this.img = new Image();
+	
+	this.img.onload = function () {
+		ev1 = new Event('PieceReady');
+		ev1.src = src;
+		window.dispatchEvent(ev1);
+	};
+
+	this.img.src = this.getIMGSrcType(this.type,this.player);
+};
+
 
 //ChessBoard and Chesspiece prototypes
 
@@ -137,78 +249,21 @@ ChessBoard.prototype.setStdBoard = function (Board) {
 
 };
 
-CanvasObject.prototype.getIMGSrcType = function (type, player) {
 
-	var name = type+player;
+//renders the piece object into the window
+
+CanvasObject.prototype.setPieceIMG = function(src) {
 	
-	switch (name) {
+	//var L1Piece = canvas.getContext('2d');
 
-		case 'P1':
-		name = 'https://cloud.githubusercontent.com/assets/12261709/8661365/49cb22f8-2974-11e5-90ce-519c1c2a1547.png';
-		break;
-
-		case 'P2':
-		name = 'https://cloud.githubusercontent.com/assets/12261709/8661386/65ebed6e-2974-11e5-9b9a-3954b9ec957e.png';
-		break;
-
-		case 'R1':
-		name = 'dummy.png';
-		break;
-
-		case 'R2':
-		name = 'dummy.png';
-		break;
-
-		case 'N1':
-		name = 'dummy.png';
-		break;
-
-		case 'N2':
-		name = 'dummy.png';
-		break;
-
-		case 'B1':
-		name = 'dummy.png';
-		break;
-
-		case 'B2':
-		name = 'dummy.png';
-		break;
-
-		case 'Q1':
-		name = 'https://cloud.githubusercontent.com/assets/12261709/8661420/a4f8f83a-2974-11e5-81e7-7d0fdeb904a0.png';
-		break;
-
-		case 'Q2':
-		name = 'https://cloud.githubusercontent.com/assets/12261709/8661443/c00f1668-2974-11e5-9d36-c8af52bc5e7d.png';
-		break;
-
-		case 'K1':
-		name = 'https://cloud.githubusercontent.com/assets/12261709/8661397/768c5802-2974-11e5-9e34-25c42afeb743.png';
-		break;
-
-		case 'K2':
-		name = 'https://cloud.githubusercontent.com/assets/12261709/8661405/87604f26-2974-11e5-891a-4ed3aa3f87e7.png';
-		break;
-
-		Default:
-		name = 'dummy.png';
-		break;
-	}
-
-	return name;
-
-};
-
-CanvasObject.prototype.setPieceIMG = function(src,arrayIMG,x,y,sizeX,sizeY,sqrSize) {
-	
-	var L1Piece = canvas.getContext('2d');
-
-	var img = arrayIMG[y][x];
+	//var img = arrayIMG[y][x];
 	img.setAttribute('src', src);
 	//img.src = src;
-	L1Piece.drawImage(img, sqrSize * (x % sizeX) + 50, sqrSize * (y % sizeY) + 50, 100, 100);
+	//L1Piece.drawImage(img, sqrSize * (x % sizeX) + 50, sqrSize * (y % sizeY) + 50, 100, 100);
 };
+
+
+//preloads the canvas piece object by calling an event set up in the canvas Object
 
 CanvasObject.prototype.preload = function(src, arrayIMG, x, y, sizeX, sizeY, sqrSize) {
 
@@ -232,6 +287,7 @@ CanvasObject.prototype.preload = function(src, arrayIMG, x, y, sizeX, sizeY, sqr
 
 //display the entire chessboard, based on the type property (incomplete, must make sprites for the pieces)
 
+
 CanvasObject.prototype.displayBoard = function (Board, CanvasObject) {
 
         for(var j = 0; j < Board.board.length; j++) {
@@ -239,12 +295,13 @@ CanvasObject.prototype.displayBoard = function (Board, CanvasObject) {
                         if(Board.board[j][i] != null){
 
 				var BoardL1 = CanvasObject.layers[1];
+				var L1Piece = CanvasObject.getContext('2d');
 
-				srcIMG = CanvasObject.getIMGSrcType(Board.board[j][i].type, Board.board[j][i].player);
+				//srcIMG = CanvasObject.getIMGSrcType(Board.board[j][i].type, Board.board[j][i].player);
 				
-				this.preload(srcIMG, BoardL1, i, j, CanvasObject.boardSizeX, CanvasObject.boardSizeY, CanvasObject.rectSize);
+				//this.preload(srcIMG, BoardL1, i, j, CanvasObject.boardSizeX, CanvasObject.boardSizeY, CanvasObject.rectSize);
 
-				//BoardL1[j][i] = img; so wrong, have to correct it
+				L1Piece.drawImage(BoardL1[j][i].img, CanvasObject.rectSize * (i % CanvasObject.boardSizeX) + 50, CanvasObject.rectSize * (j % CanvasObject.boardSizeY) + 50, 100, 100);
                         }	
                 }
         }
@@ -678,6 +735,8 @@ var CanvasObject1 = new CanvasObject (XrectSize, XboardSizeX, XboardSizeY, Xcolo
 ChessBoard1.setStdBoard(ChessBoard1);
 
 ChessBoard1.setPiece(ChessBoard1,4,4,'Q',1); //test piece
+
+CanvasObject1.setCanvasPieces(ChessBoard1, CanvasObject1);
 
 CanvasObject1.displayBoard(ChessBoard1, CanvasObject1);
 
