@@ -11,6 +11,8 @@
 canvas = document.getElementById('canvasTest');
 document.body.appendChild(canvas);
 
+//srcIMG = 'http://www.charbase.com/images/glyph/9817';
+
 XrectSize = 100;
 XboardSizeX = 8;
 XboardSizeY = 8;
@@ -32,6 +34,7 @@ var CanvasObject = function (rectSize, boardSizeX, boardSizeY, color1, color2) {
 	window.addEventListener('PieceReady', function(ev){
 		this.setPieceIMG(ev.src, ev.arrayIMG, ev.x, ev.y, ev.sizeX, ev.sizeY, ev.sqrSize);
 	}.bind(this));
+
 	
 };
 
@@ -136,6 +139,69 @@ ChessBoard.prototype.setStdBoard = function (Board) {
 
 };
 
+CanvasObject.prototype.getIMGSrcType = function (type, player) {
+
+	var name = type+player;
+	
+	switch (name) {
+
+		case 'P1':
+		name = 'pawnRed.png';
+		break;
+
+		case 'P2':
+		name = 'pawnBlue.png';
+		break;
+
+		case 'R1':
+		name = 'dummy.png';
+		break;
+
+		case 'R2':
+		name = 'dummy.png';
+		break;
+
+		case 'N1':
+		name = 'dummy.png';
+		break;
+
+		case 'N2':
+		name = 'dummy.png';
+		break;
+
+		case 'B1':
+		name = 'dummy.png';
+		break;
+
+		case 'B2':
+		name = 'dummy.png';
+		break;
+
+		case 'Q1':
+		name = 'queenRed.png';
+		break;
+
+		case 'Q2':
+		name = 'queenBlue.png';
+		break;
+
+		case 'K1':
+		name = 'kingRed.png';
+		break;
+
+		case 'K2':
+		name = 'queenRed.png';
+		break;
+
+		Default:
+		name = 'dummy.png';
+		break;
+	}
+
+	return name;
+
+};
+
 CanvasObject.prototype.setPieceIMG = function(src,arrayIMG,x,y,sizeX,sizeY,sqrSize) {
 	
 	var L1Piece = canvas.getContext('2d');
@@ -143,16 +209,16 @@ CanvasObject.prototype.setPieceIMG = function(src,arrayIMG,x,y,sizeX,sizeY,sqrSi
 	var img = arrayIMG[y][x];
 	img.setAttribute('src', src);
 	//img.src = src;
-	L1Piece.drawImage(img, sqrSize * (x % sizeX) + 50, sqrSize * (y % sizeY) + 50, 100, 100)
+	L1Piece.drawImage(img, sqrSize * (x % sizeX) + 50, sqrSize * (y % sizeY) + 50, 100, 100);
 };
 
-CanvasObject.prototype.preload = function(src, arrayIMG, x, y, sizeX, sizeY, sqrSize, type) {
+CanvasObject.prototype.preload = function(src, arrayIMG, x, y, sizeX, sizeY, sqrSize) {
 
 	var img = new Image();
 	arrayIMG[y][x] = img;
 
 	img.onload = function () {
-		ev1 = new Event(type + 'Ready');
+		ev1 = new Event('PieceReady');
 		ev1.src = src;
 		ev1.arrayIMG = arrayIMG;
 		ev1.x = x;
@@ -175,41 +241,12 @@ CanvasObject.prototype.displayBoard = function (Board, CanvasObject) {
                         if(Board.board[j][i] != null){
 
 				var BoardL1 = CanvasObject.layers[1];
-				srcIMG = 'http://www.charbase.com/images/glyph/9817';
 
-				this.preload(srcIMG, BoardL1, i, j, CanvasObject.boardSizeX, CanvasObject.boardSizeY, CanvasObject.rectSize, 'Piece');
-
-/*                        	
-                        	var L1Piece = canvas.getContext('2d');
+				srcIMG = CanvasObject.getIMGSrcType(Board.board[j][i].type, Board.board[j][i].player);
 				
-				var BoardL1 = CanvasObject.layers[1];
-				var img = new Image();
+				this.preload(srcIMG, BoardL1, i, j, CanvasObject.boardSizeX, CanvasObject.boardSizeY, CanvasObject.rectSize);
 
-				//this one doesn't work of course
-
-				img.onload = function () {
-					L1Piece.drawImage(img, Board.rectSize * (i % Board.boardSizeX) + 50, Board.rectSize * (j % Board.boardSizeY) + 50, 100, 100);
-				}
-
-				//this is where the alarms go off, I had to use an anonymous instant function or something previously to make it work, but it gets kind of messy
-
-				img.onload =  ( function () {
-					
-					var thisI = i;
-					var thisJ = j;
-					var thisBoardSizeX = Board.boardSizeX;
-					var thisBoardSizeY = Board.boardSizeY;
-					var thisRectSize = Board.rectSize;
-
-					return function () {
-						L1Piece.drawImage(this, thisRectSize * (thisI % thisBoardSizeX) + 50, thisRectSize * (thisJ % thisBoardSizeY) + 50, 100, 100);
-					};
-				}.bind(this)());
-	
-				img.src = 'http://www.charbase.com/images/glyph/9817';
-
-				BoardL1[j][i] = img;
-*/
+				//BoardL1[j][i] = img; so wrong, have to correct it
                         }	
                 }
         }
