@@ -58,6 +58,8 @@ CanvasObject.prototype.setCanvasBoard = function (layers,rectSize,boardSizeX,boa
 			var pos = canvas.getContext('2d');
 			var pieceTxt = canvas.getContext('2d');
 
+			//rect.globalAlpha = 0.5;
+
 			rect.fillStyle = j % 2 == 0 ? color1 : color2;
 			rect.fillRect( rectSize * (i % boardSizeX) + 50, rectSize * (j % boardSizeY) + 50, rectSize, rectSize);
 
@@ -79,7 +81,36 @@ CanvasObject.prototype.setCanvasBoard = function (layers,rectSize,boardSizeX,boa
 };
 
 
-//set the canvas pieces so they can later be displayed
+//sets a canvas piece on the canvas board, allows it to preload the source image
+
+CanvasObject.prototype.setCanvasPiece = function (Board, CanvasObject, x, y) {
+
+	var BoardL1 = CanvasObject.layers[1];
+
+	if(Board.board[y][x] != null){
+
+		var CanvasPiece1 =  new CanvasPiece(Board.board[y][x].type, Board.board[y][x].player);	
+
+		var img = new Image();
+		var src = CanvasPiece1.src;
+
+		CanvasPiece1.img = img;
+
+		img.onload = function () {
+			ev1 = new Event('PieceReady');
+			ev1.src = src;
+			ev1.img = img;
+			window.dispatchEvent(ev1);
+		};
+
+		img.src = src;
+
+		BoardL1[y][x] = CanvasPiece1;
+        }
+};
+
+
+//does a loop for the canvas pieces so they can later be displayed, this is called once at the beginning. setCanvasPiece() (the singular version) can be called if more pieces were to be added
 
 //NOTE!!! HELLO FUTURE ME! PLEASE REMEMBER TO TEST IF WE CAN USE this.layers INSTEAD OF CanvasObject.layers!!! That would save us some work and stupidity
 
@@ -90,8 +121,8 @@ CanvasObject.prototype.setCanvasPieces = function (Board, CanvasObject) {
         for(var j = 0; j < Board.board.length; j++) {
                 for(var i = 0; i < Board.board[0].length; i++) {
                         if(Board.board[j][i] != null){
-				var CanvasPiece1 =  new CanvasPiece(Board.board[j][i].type, Board.board[j][i].player);
-				BoardL1[j][i] = CanvasPiece1;
+
+				CanvasObject.setCanvasPiece(Board, CanvasObject, i, j);
                         }	
                 }
         }
@@ -105,21 +136,8 @@ var CanvasPiece = function (type,player) {
 	this.type =  type;
 	this.player = player;
 	this.src = this.getIMGSrcType(this.type,this.player);
-
-	this.img = new Image();
-
-	src1 = this.src;
-	img1 = this.img;
-
-	this.img.onload = function () {
-		ev1 = new Event('PieceReady');
-		ev1.src = src1;
-		ev1.img = img1;
-		window.dispatchEvent(ev1);
-	};
-
-	this.img.src = this.src;
-
+	this.ctx = canvas.getContext('2d');
+	this.img = null;
 };
 
 
@@ -265,13 +283,16 @@ CanvasObject.prototype.setPieceIMG = function(src,img) {
 CanvasObject.prototype.displayBoard = function (Board, CanvasObject) {
 
 	var BoardL1 = CanvasObject.layers[1];
-	var L1Piece = canvas.getContext('2d');
 
         for(var j = 0; j < Board.board.length; j++) {
                 for(var i = 0; i < Board.board[0].length; i++) {
                         if(Board.board[j][i] != null){
-				
-				L1Piece.drawImage(BoardL1[j][i].img, CanvasObject.rectSize * (i % CanvasObject.boardSizeX) + 50, CanvasObject.rectSize * (j % CanvasObject.boardSizeY) + 50, 100, 100);
+		
+				//context.drawImage(image, x,y,sizeX,sizeY);
+				//BoardL1[j][i] is the canvas chess piece at i,j, it has img and cxt (context) as part of its properties
+
+				BoardL1[j][i].ctx.drawImage(BoardL1[j][i].img, CanvasObject.rectSize * (i % CanvasObject.boardSizeX) + 50, CanvasObject.rectSize * (j % CanvasObject.boardSizeY) + 50, 100, 100);
+
                         }	
                 }
         }
