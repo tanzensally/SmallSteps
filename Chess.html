@@ -79,8 +79,6 @@ CanvasObject.prototype.setCanvasBoard = function (layers,rectSize,boardSizeX,boa
 };
 
 
-
-
 //set the canvas pieces so they can later be displayed
 
 //NOTE!!! HELLO FUTURE ME! PLEASE REMEMBER TO TEST IF WE CAN USE this.layers INSTEAD OF CanvasObject.layers!!! That would save us some work and stupidity
@@ -190,6 +188,7 @@ CanvasPiece.prototype.getIMGSrcType = function (type, player) {
 
 };
 
+
 //ChessBoard and Chesspiece prototypes
 
 var ChessBoard = function (x,y) {
@@ -261,8 +260,7 @@ CanvasObject.prototype.setPieceIMG = function(src,img) {
 };
 
 
-
-//display the entire chessboard, based on the type property (incomplete, must make sprites for the pieces)
+//display the chessboard pieces images taken from Layer 1 of the canvas object
 
 CanvasObject.prototype.displayBoard = function (Board, CanvasObject) {
 
