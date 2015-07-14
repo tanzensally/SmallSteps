@@ -31,7 +31,7 @@ var CanvasObject = function (rectSize, boardSizeX, boardSizeY, color1, color2) {
 	this.layers = [];
 	this.layers = this.setCanvasBoard(this.layers,rectSize,boardSizeX,boardSizeY,color1,color2);
 
-	window.addEventListener('PieceReady', function(ev){
+	window.addEventListener('PieceReady', function(ev){		
 		this.setPieceIMG(ev.src, ev.img);
 	}.bind(this));
 
@@ -112,7 +112,7 @@ var CanvasPiece = function (type,player) {
 
 	src1 = this.src;
 	img1 = this.img;
-	
+
 	this.img.onload = function () {
 		ev1 = new Event('PieceReady');
 		ev1.src = src1;
@@ -121,6 +121,7 @@ var CanvasPiece = function (type,player) {
 	};
 
 	this.img.src = this.src;
+
 };
 
 
@@ -265,13 +266,13 @@ CanvasObject.prototype.setPieceIMG = function(src,img) {
 
 CanvasObject.prototype.displayBoard = function (Board, CanvasObject) {
 
+	var BoardL1 = CanvasObject.layers[1];
+	var L1Piece = canvas.getContext('2d');
+
         for(var j = 0; j < Board.board.length; j++) {
                 for(var i = 0; i < Board.board[0].length; i++) {
                         if(Board.board[j][i] != null){
-
-				var BoardL1 = CanvasObject.layers[1];
-				var L1Piece = canvas.getContext('2d');
-
+				
 				L1Piece.drawImage(BoardL1[j][i].img, CanvasObject.rectSize * (i % CanvasObject.boardSizeX) + 50, CanvasObject.rectSize * (j % CanvasObject.boardSizeY) + 50, 100, 100);
                         }	
                 }
