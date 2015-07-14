@@ -30,14 +30,9 @@ var CanvasObject = function (rectSize, boardSizeX, boardSizeY, color1, color2) {
 
 	this.layers = [];
 	this.layers = this.setCanvasBoard(this.layers,rectSize,boardSizeX,boardSizeY,color1,color2);
-/*
-	window.addEventListener('PieceReady', function(ev){
-		this.setPieceIMG(ev.src, ev.arrayIMG, ev.x, ev.y, ev.sizeX, ev.sizeY, ev.sqrSize);
-	}.bind(this));
-*/
 
 	window.addEventListener('PieceReady', function(ev){
-		this.setPieceIMG(ev.src);
+		this.setPieceIMG(ev.src, ev.img);
 	}.bind(this));
 
 };
@@ -84,9 +79,54 @@ CanvasObject.prototype.setCanvasBoard = function (layers,rectSize,boardSizeX,boa
 };
 
 
+
+
+//set the canvas pieces so they can later be displayed
+
+//NOTE!!! HELLO FUTURE ME! PLEASE REMEMBER TO TEST IF WE CAN USE this.layers INSTEAD OF CanvasObject.layers!!! That would save us some work and stupidity
+
+CanvasObject.prototype.setCanvasPieces = function (Board, CanvasObject) {
+
+	var BoardL1 = CanvasObject.layers[1];
+
+        for(var j = 0; j < Board.board.length; j++) {
+                for(var i = 0; i < Board.board[0].length; i++) {
+                        if(Board.board[j][i] != null){
+				var CanvasPiece1 =  new CanvasPiece(Board.board[j][i].type, Board.board[j][i].player);
+				BoardL1[j][i] = CanvasPiece1;
+                        }	
+                }
+        }
+};
+
+
+//make a canvas piece object, it will have and load its img file source once depending on the chesspiece
+
+var CanvasPiece = function (type,player) {
+
+	this.type =  type;
+	this.player = player;
+	this.src = this.getIMGSrcType(this.type,this.player);
+
+	this.img = new Image();
+
+	src1 = this.src;
+	img1 = this.img;
+	
+	this.img.onload = function () {
+		ev1 = new Event('PieceReady');
+		ev1.src = src1;
+		ev1.img = img1;
+		window.dispatchEvent(ev1);
+	};
+
+	this.img.src = this.src;
+};
+
+
 //provides the source for a given piece type and player
 
-CanvasObject.prototype.getIMGSrcType = function (type, player) {
+CanvasPiece.prototype.getIMGSrcType = function (type, player) {
 
 	var name = type+player;
 	
@@ -148,44 +188,6 @@ CanvasObject.prototype.getIMGSrcType = function (type, player) {
 	return name;
 
 };
-
-//set the canvas pieces so they can later be displayed
-
-//NOTE!!! HELLO FUTURE ME! PLEASE REMEMBER TO TEST IF WE CAN USE this.layers INSTEAD OF CanvasObject.layers!!! That would save us some work and stupidity
-
-CanvasObject.prototype.setCanvasPieces = function (Board, CanvasObject) {
-
-	var BoardL1 = CanvasObject.layers[1];
-
-        for(var j = 0; j < Board.board.length; j++) {
-                for(var i = 0; i < Board.board[0].length; i++) {
-                        if(Board.board[j][i] != null){
-				var CanvasPiece1 =  new CanvasPiece(Board.board[j][i].type, Board.board[j][i].player);
-				BoardL1[j][i] = CanvasPiece1;
-                        }	
-                }
-        }
-};
-
-
-//make a canvas piece object, it will have and load its img file source once depending on the chesspiece
-
-var CanvasPiece = function (type,player) {
-
-	this.type =  type;
-	this.player = player;
-
-	this.img = new Image();
-	
-	this.img.onload = function () {
-		ev1 = new Event('PieceReady');
-		ev1.src = src;
-		window.dispatchEvent(ev1);
-	};
-
-	this.img.src = this.getIMGSrcType(this.type,this.player);
-};
-
 
 //ChessBoard and Chesspiece prototypes
 
@@ -252,41 +254,14 @@ ChessBoard.prototype.setStdBoard = function (Board) {
 
 //renders the piece object into the window
 
-CanvasObject.prototype.setPieceIMG = function(src) {
-	
-	//var L1Piece = canvas.getContext('2d');
+CanvasObject.prototype.setPieceIMG = function(src,img) {
 
-	//var img = arrayIMG[y][x];
 	img.setAttribute('src', src);
-	//img.src = src;
-	//L1Piece.drawImage(img, sqrSize * (x % sizeX) + 50, sqrSize * (y % sizeY) + 50, 100, 100);
 };
 
 
-//preloads the canvas piece object by calling an event set up in the canvas Object
-
-CanvasObject.prototype.preload = function(src, arrayIMG, x, y, sizeX, sizeY, sqrSize) {
-
-	var img = new Image();
-	arrayIMG[y][x] = img;
-
-	img.onload = function () {
-		ev1 = new Event('PieceReady');
-		ev1.src = src;
-		ev1.arrayIMG = arrayIMG;
-		ev1.x = x;
-		ev1.y = y;
-		ev1.sizeX = sizeX;
-		ev1.sizeY = sizeY;
-		ev1.sqrSize = sqrSize;
-		window.dispatchEvent(ev1);
-	};
-	img.src = src;
-
-};
 
 //display the entire chessboard, based on the type property (incomplete, must make sprites for the pieces)
-
 
 CanvasObject.prototype.displayBoard = function (Board, CanvasObject) {
 
@@ -295,11 +270,7 @@ CanvasObject.prototype.displayBoard = function (Board, CanvasObject) {
                         if(Board.board[j][i] != null){
 
 				var BoardL1 = CanvasObject.layers[1];
-				var L1Piece = CanvasObject.getContext('2d');
-
-				//srcIMG = CanvasObject.getIMGSrcType(Board.board[j][i].type, Board.board[j][i].player);
-				
-				//this.preload(srcIMG, BoardL1, i, j, CanvasObject.boardSizeX, CanvasObject.boardSizeY, CanvasObject.rectSize);
+				var L1Piece = canvas.getContext('2d');
 
 				L1Piece.drawImage(BoardL1[j][i].img, CanvasObject.rectSize * (i % CanvasObject.boardSizeX) + 50, CanvasObject.rectSize * (j % CanvasObject.boardSizeY) + 50, 100, 100);
                         }	
