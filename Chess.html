@@ -116,8 +116,6 @@ CanvasObject.prototype.setCanvasPiece = function (Board, CanvasObject, x, y) {
 
 CanvasObject.prototype.setCanvasPieces = function (Board, CanvasObject) {
 
-	var BoardL1 = CanvasObject.layers[1];
-
         for(var j = 0; j < Board.board.length; j++) {
                 for(var i = 0; i < Board.board[0].length; i++) {
                         if(Board.board[j][i] != null){
