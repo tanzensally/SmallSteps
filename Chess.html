@@ -92,12 +92,18 @@ CanvasObject.prototype.setCanvasPiece = function (Board, CanvasObject, x, y) {
 
 	if(Board.board[y][x] != null){
 
-		var CanvasPiece1 =  new CanvasPiece(Board.board[y][x].type, Board.board[y][x].player);	
-
+		var ctx = canvas.getContext('2d');
 		var img = new Image();
-		var src = CanvasPiece1.src;
 
-		CanvasPiece1.img = img;
+		var src = CanvasObject.getIMGSrcByTypePlayer(Board.board[y][x].type, Board.board[y][x].player);
+
+		var CanvasPiece1 =  new CanvasPiece (
+			Board.board[y][x].type,
+			Board.board[y][x].player,
+			src,
+			ctx,
+			img
+		); //type,player,src,context,img
 
 		img.onload = function () {
 			ev1 = new Event('PieceReady');
@@ -110,6 +116,94 @@ CanvasObject.prototype.setCanvasPiece = function (Board, CanvasObject, x, y) {
 
 		BoardL1[y][x] = CanvasPiece1;
         }
+};
+
+
+//provides the source for a given piece type and player
+
+CanvasObject.prototype.getIMGSrcByTypePlayer = function (type, player) {
+
+	var name = type+player;
+	
+	switch (name) {
+
+		case 'P1':
+		name = 'https://cloud.githubusercontent.com/assets/12261709/8661365/49cb22f8-2974-11e5-90ce-519c1c2a1547.png';
+		break;
+
+		case 'P2':
+		name = 'https://cloud.githubusercontent.com/assets/12261709/8661386/65ebed6e-2974-11e5-9b9a-3954b9ec957e.png';
+		break;
+
+		case 'R1':
+		name = 'https://cloud.githubusercontent.com/assets/12261709/8661865/0c18e86a-2978-11e5-97c7-e25bf067bfc5.png';
+		break;
+
+		case 'R2':
+		name = 'https://cloud.githubusercontent.com/assets/12261709/8661871/18f8179a-2978-11e5-9795-8a21f2486cac.png';
+		break;
+
+		case 'N1':
+		name = 'https://cloud.githubusercontent.com/assets/12261709/8661883/31c1b4de-2978-11e5-98b1-2e82d27e98bd.png';
+		break;
+
+		case 'N2':
+		name = 'https://cloud.githubusercontent.com/assets/12261709/8661876/24b9a706-2978-11e5-93a8-e7d11ae1cd79.png';
+		break;
+
+		case 'B1':
+		name = 'https://cloud.githubusercontent.com/assets/12261709/8661897/4aeb035c-2978-11e5-81f1-1746b8853ac1.png';
+		break;
+
+		case 'B2':
+		name = 'https://cloud.githubusercontent.com/assets/12261709/8661893/406081a0-2978-11e5-8690-2f1e33fac4fc.png';
+		break;
+
+		case 'Q1':
+		name = 'https://cloud.githubusercontent.com/assets/12261709/8661420/a4f8f83a-2974-11e5-81e7-7d0fdeb904a0.png';
+		break;
+
+		case 'Q2':
+		name = 'https://cloud.githubusercontent.com/assets/12261709/8661443/c00f1668-2974-11e5-9d36-c8af52bc5e7d.png';
+		break;
+
+		case 'K1':
+		name = 'https://cloud.githubusercontent.com/assets/12261709/8661397/768c5802-2974-11e5-9e34-25c42afeb743.png';
+		break;
+
+		case 'K2':
+		name = 'https://cloud.githubusercontent.com/assets/12261709/8661405/87604f26-2974-11e5-891a-4ed3aa3f87e7.png';
+		break;
+
+		Default:
+		name = 'dummy.png';
+		break;
+	}
+
+	return name;
+
+};
+
+
+//preload function for the canvas pieces, it calls onload
+
+CanvasObject.prototype.preload =  function (piece){
+
+		var img = new Image();
+		var src = piece.src;
+
+		piece.img = img;
+
+		img.onload = function () {
+			ev1 = new Event('PieceReady');
+			ev1.src = src;
+			ev1.img = img;
+			window.dispatchEvent(ev1);
+		};
+
+		img.onerror=function(){alert("image load failed");}
+		img.src = src;
+		
 };
 
 
@@ -195,82 +289,17 @@ CanvasObject.prototype.displayMoves = function(movesPiece, Board) { //THIS FUNCT
 
 //make a canvas piece object, it will have and load its img file source once depending on the chesspiece
 
-var CanvasPiece = function (type,player) {
+var CanvasPiece = function (type,player,src,ctx,img) {
 
 	this.type =  type;
 	this.player = player;
-	this.src = this.getIMGSrcType(this.type,this.player);
-	this.ctx = canvas.getContext('2d');
-	this.img = null;
+	this.src = src;
+	this.ctx = ctx;
+	this.img = img;
 
 	window.addEventListener('PieceReady', function(ev){		
 		this.setPieceIMG(ev.src, ev.img);
 	}.bind(this));
-};
-
-
-//provides the source for a given piece type and player
-
-CanvasPiece.prototype.getIMGSrcType = function (type, player) {
-
-	var name = type+player;
-	
-	switch (name) {
-
-		case 'P1':
-		name = 'https://cloud.githubusercontent.com/assets/12261709/8661365/49cb22f8-2974-11e5-90ce-519c1c2a1547.png';
-		break;
-
-		case 'P2':
-		name = 'https://cloud.githubusercontent.com/assets/12261709/8661386/65ebed6e-2974-11e5-9b9a-3954b9ec957e.png';
-		break;
-
-		case 'R1':
-		name = 'https://cloud.githubusercontent.com/assets/12261709/8661865/0c18e86a-2978-11e5-97c7-e25bf067bfc5.png';
-		break;
-
-		case 'R2':
-		name = 'https://cloud.githubusercontent.com/assets/12261709/8661871/18f8179a-2978-11e5-9795-8a21f2486cac.png';
-		break;
-
-		case 'N1':
-		name = 'https://cloud.githubusercontent.com/assets/12261709/8661883/31c1b4de-2978-11e5-98b1-2e82d27e98bd.png';
-		break;
-
-		case 'N2':
-		name = 'https://cloud.githubusercontent.com/assets/12261709/8661876/24b9a706-2978-11e5-93a8-e7d11ae1cd79.png';
-		break;
-
-		case 'B1':
-		name = 'https://cloud.githubusercontent.com/assets/12261709/8661897/4aeb035c-2978-11e5-81f1-1746b8853ac1.png';
-		break;
-
-		case 'B2':
-		name = 'https://cloud.githubusercontent.com/assets/12261709/8661893/406081a0-2978-11e5-8690-2f1e33fac4fc.png';
-		break;
-
-		case 'Q1':
-		name = 'https://cloud.githubusercontent.com/assets/12261709/8661420/a4f8f83a-2974-11e5-81e7-7d0fdeb904a0.png';
-		break;
-
-		case 'Q2':
-		name = 'https://cloud.githubusercontent.com/assets/12261709/8661443/c00f1668-2974-11e5-9d36-c8af52bc5e7d.png';
-		break;
-
-		case 'K1':
-		name = 'https://cloud.githubusercontent.com/assets/12261709/8661397/768c5802-2974-11e5-9e34-25c42afeb743.png';
-		break;
-
-		case 'K2':
-		name = 'https://cloud.githubusercontent.com/assets/12261709/8661405/87604f26-2974-11e5-891a-4ed3aa3f87e7.png';
-		break;
-
-		Default:
-		name = 'dummy.png';
-		break;
-	}
-
-	return name;
 
 };
 
