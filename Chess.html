@@ -21,7 +21,6 @@ XboardSizeY = 8;
 Xcolor1 = 'skyblue';
 Xcolor2 = 'lightgreen';
 
-
 //---------------------------------
 
 
@@ -88,14 +87,17 @@ CanvasObject.prototype.setCanvasBoard = function (layers,rectSize,boardSizeX,boa
 
 CanvasObject.prototype.setCanvasPiece = function (Board, CanvasObject, x, y) {
 
-	var BoardL1 = CanvasObject.layers[1];
+	var BoardL1 = this.layers[1];
 
 	if(Board.board[y][x] != null){
 
 		var ctx = canvas.getContext('2d');
 		var img = new Image();
+	
+//		var src = this.getIMGSrcByTypePlayer(Board.board[y][x].type, Board.board[y][x].player);
+		var src = this.getIMGSrcByTypePlayer(Board.board[y][x].type, Board.board[y][x].player);
 
-		var src = CanvasObject.getIMGSrcByTypePlayer(Board.board[y][x].type, Board.board[y][x].player);
+		img.src = src;
 
 		var CanvasPiece1 =  new CanvasPiece (
 			Board.board[y][x].type,
@@ -105,14 +107,24 @@ CanvasObject.prototype.setCanvasPiece = function (Board, CanvasObject, x, y) {
 			img
 		); //type,player,src,context,img
 
+/*		this doesn't work
+
 		img.onload = function () {
 			ev1 = new Event('PieceReady');
 			ev1.src = src;
 			ev1.img = img;
 			window.dispatchEvent(ev1);
 		};
+*/
 
-		img.src = src;
+//		this does work, though I have to specify the context as CanvasObject1 = this; my problem is that it will only work once, at the start...and I would like more control over the render function
+
+		CanvasObject1 = this;
+
+		img.onload = function () {
+			ctx.drawImage(img, CanvasObject1.rectSize * (x % CanvasObject1.boardSizeX) + 50, CanvasObject1.rectSize * (y % CanvasObject1.boardSizeY) + 50, 100, 100);
+		};
+//
 
 		BoardL1[y][x] = CanvasPiece1;
         }
@@ -185,28 +197,6 @@ CanvasObject.prototype.getIMGSrcByTypePlayer = function (type, player) {
 };
 
 
-//preload function for the canvas pieces, it calls onload
-
-CanvasObject.prototype.preload =  function (piece){
-
-		var img = new Image();
-		var src = piece.src;
-
-		piece.img = img;
-
-		img.onload = function () {
-			ev1 = new Event('PieceReady');
-			ev1.src = src;
-			ev1.img = img;
-			window.dispatchEvent(ev1);
-		};
-
-		img.onerror=function(){alert("image load failed");}
-		img.src = src;
-		
-};
-
-
 //does a loop for the canvas pieces so they can later be displayed, this is called once at the beginning. setCanvasPiece() (the singular version) can be called if more pieces were to be added
 
 //NOTE!!! HELLO FUTURE ME! PLEASE REMEMBER TO TEST IF WE CAN USE this.layers INSTEAD OF CanvasObject.layers!!! That would save us some work and stupidity
@@ -217,7 +207,7 @@ CanvasObject.prototype.setCanvasPieces = function (Board, CanvasObject) {
                 for(var i = 0; i < Board.board[0].length; i++) {
                         if(Board.board[j][i] != null){
 
-				CanvasObject.setCanvasPiece(Board, CanvasObject, i, j);
+				this.setCanvasPiece(Board, this, i, j);
                         }	
                 }
         }
@@ -228,7 +218,7 @@ CanvasObject.prototype.setCanvasPieces = function (Board, CanvasObject) {
 
 CanvasObject.prototype.displayBoard = function (Board, CanvasObject) {
 
-	var BoardL1 = CanvasObject.layers[1];
+	var BoardL1 = this.layers[1];
 
         for(var j = 0; j < Board.board.length; j++) {
                 for(var i = 0; i < Board.board[0].length; i++) {
@@ -237,7 +227,7 @@ CanvasObject.prototype.displayBoard = function (Board, CanvasObject) {
 				//context.drawImage(image, x,y,sizeX,sizeY);
 				//BoardL1[j][i] is the canvas chess piece at i,j, it has img and cxt (context) as part of its properties
 
-				BoardL1[j][i].ctx.drawImage(BoardL1[j][i].img, CanvasObject.rectSize * (i % CanvasObject.boardSizeX) + 50, CanvasObject.rectSize * (j % CanvasObject.boardSizeY) + 50, 100, 100);
+				BoardL1[j][i].ctx.drawImage(BoardL1[j][i].img, this.rectSize * (i % this.boardSizeX) + 50, this.rectSize * (j % this.boardSizeY) + 50, 100, 100);
 
                         }	
                 }
