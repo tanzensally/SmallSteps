@@ -36,7 +36,8 @@ var CanvasObject = function (rectSize, boardSizeX, boardSizeY, color1, color2) {
 
 	this.layers = [];
 	this.layers = this.setCanvasBoard(this.layers,rectSize,boardSizeX,boardSizeY,color1,color2);
-
+	
+	this.loadCounter = 0;
 };
 
 //set the canvas up and the background
@@ -85,7 +86,7 @@ CanvasObject.prototype.setCanvasBoard = function (layers,rectSize,boardSizeX,boa
 
 //sets a canvas piece on the canvas board, allows it to preload the source image
 
-CanvasObject.prototype.setCanvasPiece = function (Board, CanvasObject, x, y) {
+CanvasObject.prototype.setCanvasPiece = function (Board, x, y) {
 
 	var BoardL1 = this.layers[1];
 
@@ -94,7 +95,6 @@ CanvasObject.prototype.setCanvasPiece = function (Board, CanvasObject, x, y) {
 		var ctx = canvas.getContext('2d');
 		var img = new Image();
 	
-//		var src = this.getIMGSrcByTypePlayer(Board.board[y][x].type, Board.board[y][x].player);
 		var src = this.getIMGSrcByTypePlayer(Board.board[y][x].type, Board.board[y][x].player);
 
 		img.src = src;
@@ -113,20 +113,56 @@ CanvasObject.prototype.setCanvasPiece = function (Board, CanvasObject, x, y) {
 			ev1 = new Event('PieceReady');
 			ev1.src = src;
 			ev1.img = img;
+			ev1.x = x;
+			ev1.y = y;
+			ev1.sizeX = CanvasObject1.boardSizeX;
+			ev1.sizeY = CanvasObject1.boardSizeY;
 			window.dispatchEvent(ev1);
 		};
 */
+//		testing WOAH! IT WORKS!!! MUST TEST FURTHER
 
-//		this does work, though I have to specify the context as CanvasObject1 = this; my problem is that it will only work once, at the start...and I would like more control over the render function
+		img.onload = function () {
+			ev1 = new Event('PieceReady');
+			ev1.src = src;
+			ev1.img = img;
+			ev1.x = x;
+			ev1.y = y;
+			ev1.sizeX = CanvasObject1.boardSizeX;
+			ev1.sizeY = CanvasObject1.boardSizeY;
+			window.dispatchEvent(ev1);
+
+			if (CanvasObject1.loadCounter == Board.ids) {
+				CanvasObject1.displayBoard(Board, CanvasObject1);
+			}
+			CanvasObject1.loadCounter++;
+		};
+//
+/*		this does work, though I have to specify the context as CanvasObject1 = this; my problem is that it will only work once, at the start...and I would like more control over the render function
 
 		CanvasObject1 = this;
 
 		img.onload = function () {
 			ctx.drawImage(img, CanvasObject1.rectSize * (x % CanvasObject1.boardSizeX) + 50, CanvasObject1.rectSize * (y % CanvasObject1.boardSizeY) + 50, 100, 100);
 		};
-//
+*/
 
 		BoardL1[y][x] = CanvasPiece1;
+        }
+};
+
+
+//does a loop for the canvas pieces so they can later be displayed, this is called once at the beginning. setCanvasPiece() (the singular version) can be called if more pieces were to be added
+
+CanvasObject.prototype.setCanvasPieces = function (Board) {
+
+        for(var j = 0; j < Board.board.length; j++) {
+                for(var i = 0; i < Board.board[0].length; i++) {
+                        if(Board.board[j][i] != null){
+
+				this.setCanvasPiece(Board, i, j);
+                        }	
+                }
         }
 };
 
@@ -197,38 +233,22 @@ CanvasObject.prototype.getIMGSrcByTypePlayer = function (type, player) {
 };
 
 
-//does a loop for the canvas pieces so they can later be displayed, this is called once at the beginning. setCanvasPiece() (the singular version) can be called if more pieces were to be added
-
-//NOTE!!! HELLO FUTURE ME! PLEASE REMEMBER TO TEST IF WE CAN USE this.layers INSTEAD OF CanvasObject.layers!!! That would save us some work and stupidity
-
-CanvasObject.prototype.setCanvasPieces = function (Board, CanvasObject) {
-
-        for(var j = 0; j < Board.board.length; j++) {
-                for(var i = 0; i < Board.board[0].length; i++) {
-                        if(Board.board[j][i] != null){
-
-				this.setCanvasPiece(Board, this, i, j);
-                        }	
-                }
-        }
-};
-
-
-//display the chessboard pieces images taken from Layer 1 of the canvas object A.K.A The Render Loop
+//display the chessboard pieces images taken from Layer 1 of the canvas object A.K.A The Render Loop.
+//This does not do anything as of now, as setCanvasPiece() has the onload event() that triggers displayPiece()
 
 CanvasObject.prototype.displayBoard = function (Board, CanvasObject) {
 
-	var BoardL1 = this.layers[1];
+	var BoardL1 = CanvasObject.layers[1];
 
         for(var j = 0; j < Board.board.length; j++) {
                 for(var i = 0; i < Board.board[0].length; i++) {
                         if(Board.board[j][i] != null){
 		
-				//context.drawImage(image, x,y,sizeX,sizeY);
+				//context.drawImage(image,x,y,sizeX,sizeY);
 				//BoardL1[j][i] is the canvas chess piece at i,j, it has img and cxt (context) as part of its properties
 
-				BoardL1[j][i].ctx.drawImage(BoardL1[j][i].img, this.rectSize * (i % this.boardSizeX) + 50, this.rectSize * (j % this.boardSizeY) + 50, 100, 100);
-
+				//BoardL1[j][i].ctx.drawImage(BoardL1[j][i].img, this.rectSize * (i % this.boardSizeX) + 50, this.rectSize * (j % this.boardSizeY) + 50, 100, 100);
+				BoardL1[j][i].ctx.drawImage(BoardL1[j][i].img, CanvasObject.rectSize * (i % CanvasObject.boardSizeX) + 50, CanvasObject.rectSize * (j % CanvasObject.boardSizeY) + 50, 100, 100);
                         }	
                 }
         }
@@ -288,7 +308,7 @@ var CanvasPiece = function (type,player,src,ctx,img) {
 	this.img = img;
 
 	window.addEventListener('PieceReady', function(ev){		
-		this.setPieceIMG(ev.src, ev.img);
+		this.setPieceIMG(ev.src, ev.img, ev.x, ev.y, ev.sizeX, ev.sizeY);
 	}.bind(this));
 
 };
@@ -296,9 +316,13 @@ var CanvasPiece = function (type,player,src,ctx,img) {
 
 //sets the piece object src
 
-CanvasPiece.prototype.setPieceIMG = function(src,img) {
+CanvasPiece.prototype.setPieceIMG = function(src,img,x,y,sizeX,sizeY) {
 
 	img.setAttribute('src', src);
+	img.setAttribute('x',x);
+	img.setAttribute('y',y);
+	img.setAttribute('width',sizeX);
+	img.setAttribute('height',sizeY);
 };
 
 
@@ -761,9 +785,9 @@ ChessBoard1.setStdBoard(ChessBoard1);
 
 ChessBoard1.setPiece(ChessBoard1,4,4,'Q',1); //test piece
 
-CanvasObject1.setCanvasPieces(ChessBoard1, CanvasObject1);
+CanvasObject1.setCanvasPieces(ChessBoard1);
 
-CanvasObject1.displayBoard(ChessBoard1, CanvasObject1);
+//CanvasObject1.displayBoard(ChessBoard1); //doesn't do anything as of now. Will probably need it later though.
 
 //CanvasObject.displayMoves(ChessBoard1.movesPiece(ChessBoard1,4,4),ChessBoard1); //display moves for 4,4
 
