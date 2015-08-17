@@ -15,9 +15,9 @@ Well, look no more! Here's your answer!
 */
 
 var disWeekDay = 0; //0-6 monday to sunday
-var disYear = 2015; //starts today for reference
-var disMonth = 8;
-var disDay = 17;
+var disY = 2015; //starts today for reference
+var disM = 8;
+var disD = 17;
 
 //something something what date do you have in mind?
 var targetD, targetM, targetY;
@@ -25,6 +25,12 @@ targetD= 17;
 targetM = 8;
 targetY = 2016;
 //remember to add an exception here
+//later note, I don't remember what exception I was talking about...silly of me
+
+var diffD, diffM, diffY;
+diffD = 0;
+diffM = 0;
+diffY = 0;
 
 var solutionD, solutionM, solutionY;
 solutionD = 0;
@@ -35,11 +41,46 @@ var display = "";
 
 //GET DA LOOPS ROLLING!
 
+var x = disD;
+var y = disM;
+var z = disY;
+
+
 
 if (x < targetD || x > targetD) {
+
+	if (x == 31) {
+		if (y == 1 || y == 3 || y == 5 || y == 7 || y == 8 || y == 10 || y == 12) {
+			x = 0;
+		}
+	}
+	
+	if (x == 30) {
+		if (y == 4 || y == 6 || y == 9 || y == 11) {
+			x = 0;
+		}
+	}
+	
+	if (x == 28) {
+		if (y == 2) {
+			if ((z - 2000)%4 != 0) {
+				x = 0;
+			} //finish thisssss
+		}
+	}
+	
 	x++;
+	
+	diffD++;
+	
 } else if (x == targetD){
-	if ()
+	
+	if (y < targetM || y > targetM) {
+		y++;
+	} else if (y == targetM) {
+	
+	
+	}
 }
 
 
