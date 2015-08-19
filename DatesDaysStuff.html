@@ -4,9 +4,8 @@
 
 <p id="output0">Initial Date: <p>
 <p id="output1">Target Date: <p>
-<p id="output2">Time Difference: <p>
-<p id="output3">Total days: <p>
-<p id="output4">Day of the week it lands on: <p>
+<p id="output2">Total days: <p>
+<p id="output3">Day of the week it lands on: <p>
 
 <script>
 
@@ -18,48 +17,35 @@ Or until the integer crashes IDK
 Well, look no more! Here's your answer!
 */
 
-var disW = 0; //0-6 monday to sunday
 
-var disD = 31; //starts today for reference
+//this should be today's date. NO CHEATING!
+
+var disW = 3; //1-7 monday to sunday 
+
+var disD = 19;
 var disM = 8;
 var disY = 2015; 
 
-//what date do you have in mind? Please be aware this has to be a future date
+//what date do you have in mind? Please be aware this has to be a future date, it crashes if you provide the current day or any day before that
 
-var targetD, targetM, targetY;
-targetD= 1;
-targetM = 9;
-targetY = 2015;
-
-//remember to add an exception here
-//later note, I don't remember what exception I was talking about...silly of me
-
-var diffD, diffM, diffY;
-diffD = 0;
-diffM = 0;
-diffY = 0;
-
-var totalD = 0;
-
-var solutionD, solutionM, solutionY;
-solutionW = 0;
-solutionD = 0;
-solutionM = 0;
-solutionY = 0;
+var tD, tM, tY; //t is for target
+tD=  21;
+tM = 10;
+tY = 800000055; //I need to change this value for 800000055
 
 //GET DA LOOPS ROLLING!
+
+var totalD = 0;
 
 var leap = false;
 
 var w = disW;
-
-var d = disD - 1;
-var m = disM - 1;
+var d = disD;
+var m = disM;
 var y = disY;
 
-var tD = targetD - 1;
-var tM = targetM - 1;
-var tY = targetY;
+var limitM = false;
+var limitY = false;
 
 do {
 
@@ -74,82 +60,126 @@ do {
 	}
 	
 	do {
+	
+		limitY = false;
+	
+		if (m == 12) {	
+			m = 1;
+			y++;
+			limitY = true;
+		} 
 		
 		do {
 	
 			totalD++;
-		
-			d++;
-		
-			if (m == 1) {
-				if (d == 27) {
-					if (!leap) {
-						d = 0;
-						m++;
-					}		
-				}
-				if (d == 28) {
-					if (leap) {
-						d = 0;
-						m++;
-					}		
-				}
+			
+			if (w < 7) {
+				w++;
+			} else if (w == 7){
+				w = 1;
 			}
 
-			if (m == 3 || m == 5 || m == 8 || m == 10) {
+			limitM = false;
+	
+			if (m == 2) {
+			
+				if (d == 28) {
+					if (!leap) {
+						d = 1;
+
+						if (!limitY) {
+							m++;
+						}
+						
+						limitM = true;
+					}		
+				}
+				
+				if (d == 29) {
+					if (leap) {
+						d = 1;
+
+						if (!limitY) {
+							m++;
+						}						
+						
+						limitM = true;
+					}		
+				}
+				
+			}
+
+			if (m == 4 || m == 6 || m == 9 || m == 11) {
 				if (d == 29) {		
 					d = 0;
-					m++;
+
+					if (!limitY) {
+						m++;
+					}
+					
+					limitM= true;
 				}
 			}
 
-			if (m == 0 || m == 2 || m == 4 || m == 6 || m == 7 || m == 9 || m == 11) {
-				if (d == 30) {
-					d = 0;
-					m++;
+			if (m == 1 || m == 3 || m == 5 || m == 7 || m == 8 || m == 10 || m == 12) {
+				if (d == 31) {
+				
+					d = 1;
+
+					if (!limitY) {
+						m++;
+					}
+				
+					limitM = true;
 				}
 			}
 			
-			if (d-1 < tD) {
-				diffD++;
-			} else if (d-1 > tD) {
-				diffD--;
+			if (!limitM) {
+				d++;
 			}
 			
 		} while (d != tD)
-	
-		if (m == 11) {	
-			m = 0;
-			y++;
-		} 
-		
-		if (m-1 < tM) {
-			diffM++;
-		} else if (m-1 > tM) {
-			diffM--;
-		}
-		
+					
 	} while (m != tM)
 		
-	if (y-1 < tY) {
-		diffY++;
-	} else if (y-1 > tY) {
-		diffY--;
-	}
-		
 } while (y != tY)
-		
+
+switch (w) {
+	case 1:
+		w = "Monday";
+	break;
+	case 2:
+		w = "Tuesday";
+	break;
+	case 3:
+		w = "Wednesday";
+	break;
+	case 4:
+		w = "Thursday";
+	break;
+	case 5:
+		w = "Friday";
+	break;
+	case 6:
+		w = "Saturday";
+	break;
+	case 7:
+		w = "Sunday";
+	break;	
+	Default:
+		w = "IDK";
+	break;
+}
+
 display0 = "Initial Date: " +disY+ "-" +disM+ "-" +disD+ "."
-display1 = "Target Date: " +targetY+ "-" +targetM+ "-" +targetD+ "."
-display2 = "Time Difference: " +diffY+ " years, " +diffM+ " months and " +diffD+ " days."
-display3 = "Total days: " +totalD+ "."
-display4 = "Day of the week it lands on: " +solutionWD+ "."
+display1 = "Target Date: " +tY+ "-" +tM+ "-" +tD+ "."
+display2 = "Total days: " +totalD+ "."
+display3 = "Day of the week it lands on: " +w+ "."
 
 document.getElementById("output0").innerHTML = display0;
 document.getElementById("output1").innerHTML = display1;
 document.getElementById("output2").innerHTML = display2;
 document.getElementById("output3").innerHTML = display3;
-document.getElementById("output4").innerHTML = display4;
 
 //**********
 
