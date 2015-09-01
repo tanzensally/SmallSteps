@@ -1,3 +1,4 @@
+// takes shader text from html doc and compiles it
 function grep_shader(id, gl) {
 	var shad_raw = document.getElementById(id);
 	var shad_pass = "";
@@ -25,6 +26,8 @@ function grep_shader(id, gl) {
 	return shad_shad;
 }
 
+// takes compiled shaders and build program
+// needs more error handeling
 function create_prog(vs, fs, gl) {
 	var prog = gl.createProgram();
 	gl.attachShader(prog, vs);

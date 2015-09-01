@@ -1,11 +1,13 @@
+// core graphics global vars
 var c = null;
 var gl = null;
 var prog = null;
 
+// shader vars
 var vs = null;
 var fs = null;
 
-
+// init function called on page load
 function gl_init() {
 	c = document.getElementById("cgl");
 	if (c == null) { alert("no context passed in"); }
@@ -28,6 +30,7 @@ function gl_init() {
 	render_loop();
 }
 
+// render loop called every frame
 function render_loop() {
 	window.requestAnimationFrame(render_loop);
 
