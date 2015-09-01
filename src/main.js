@@ -333,10 +333,10 @@ var ChessBoard = function (x,y) {
 };
 
 var ChessPiece = function (id,type,player) {
-                this.id = id;
-                this.type = type;
-                this.player = player;
-                this.hasMoved = false;
+        this.id = id;
+        this.type = type;
+        this.player = player;
+        this.hasMoved = false;
 };
 
 ChessBoard.prototype.setBoard = function(board,x,y) {
