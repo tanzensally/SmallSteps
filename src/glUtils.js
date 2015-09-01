@@ -1,7 +1,7 @@
-function grep_shader(gl, id) {
-	let shad_raw = document.getElementById(id);
-	let shad_pass = "";
-	let k = shad_raw.firstChild;
+function grep_shader(id, gl) {
+	var shad_raw = document.getElementById(id);
+	var shad_pass = "";
+	var k = shad_raw.firstChild;
 	while (k) {
 		if (k.nodeType == 3) {
 			shad_pass += k.textContent;
@@ -9,7 +9,7 @@ function grep_shader(gl, id) {
 		k = k.nextSibling;
 	}
 
-	let shad_shad = null;
+	var shad_shad = null;
 	if (shad_raw.type == "x-shader/x-vertex")
 		{ shad_shad = gl.createShader(gl.VERTEX_SHADER); }
 	else if (shad_raw.type == "x-shader/x-fragment")
