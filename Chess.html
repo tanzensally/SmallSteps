@@ -4,10 +4,15 @@
 		<!-- this hear is the shader, d/w about this -->
 		<script id="shader-vs" type="x-shader/x-vertex">
 			attribute vec3 vec_pos;
+                        attribute vec2 tex_cord_raw;
 
 			uniform vec3 obj_pos;
 
+                        varying vec2 tex_cord;
+
 			void main(void) {
+                                tex_cord = tex_cord_raw;
+
 				gl_Position = vec4((vec_pos + obj_pos), 1.0);
 			}
 		</script>
@@ -18,9 +23,18 @@
 			precision highp float;
 			#endif
 
+                        uniform sampler2D tex0;
+
+                        varying vec2 tex_cord;
+
 			void main(void) {
-				vec4 wave = vec4(sin(gl_FragCoord.x / 8.0), sin(gl_FragCoord.y / 8.0), 0.0, 0.0);
-				gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0) - (wave / 2.0);
+				// vec4 wave = vec4(sin(gl_FragCoord.x / 8.0), sin(gl_FragCoord.y / 8.0), 0.0, 0.0);
+                                // gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+
+                                vec4 tex = texture2D(tex0, tex_cord);
+
+                                if (tex.a > 0.5) { gl_FragColor = tex; }
+                                else { discard; }
 			}
 		</script>
 
