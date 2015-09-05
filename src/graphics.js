@@ -11,6 +11,7 @@ var tex_cord = null;
 
 var obj_pos = null;
 var frag_tex0 = null;
+
 var test_texture = null;
 
 // init function called on page load
@@ -41,7 +42,8 @@ function gl_init() {
 	obj_pos = gl.getUniformLocation(prog, "obj_pos");
 
 	//establish textures
-
+	frag_tex0 = gl.getUniformLocation(prog, "tex0");
+	gl.uniform1i(test_texture, 0);
 
 	gl.useProgram(prog);
 
@@ -75,10 +77,10 @@ function gl_init() {
 
 	test_texture = gl.createTexture();
 	var test_img = new Image();
-	test_img.onLoad = function() { texture_resolve(text_img, test_texture); }
+	test_img.onLoad = function() { texture_resolve(test_img, test_texture); }
 	test_img.src = "ast/board_tiles.png";
 
-	
+	gl.bindTexture(gl.TEXTURE_2D, test_texture);
 
 	render_loop();
 }
@@ -92,8 +94,6 @@ function render_loop() {
 	gl.clearColor(0.05, 0.05, 0.05, 1.0);
 	gl.enable(gl.DEPTH_TEST);
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-	gl.bindTexture(gl.TEXTURE_2D, test_texture);
 
 	gl.uniform3fv(obj_pos, new Float32Array([0, 0, 0]));
 
