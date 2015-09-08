@@ -4,13 +4,14 @@
 <canvas id="canvasTest" width="900" height="900"></canvas>
 <script>
 
-
 //---------------------------------
 
+//ChessBoardTest3.1 - By eagleangelo and some nice people on the pbsideachannel (you know who you are)
+//i love you q, i love you sally, berra and billnye have helped me the most, diablo's a dick and aelius should go outside more often
 
-//ChessBoardTest3 - By eagleangelo and some nice people on the pbsideachannel (you know who you are)
 
 //create a canvas thing
+
 
 canvas = document.getElementById('canvasTest');
 document.body.appendChild(canvas);
@@ -23,6 +24,35 @@ Xcolor2 = 'lightgreen';
 
 //---------------------------------
 
+//make a canvas piece object, it will have and load its img file source once depending on the chesspiece
+
+var CanvasPiece = function (type,player,src,ctx,img) {
+
+	this.type =  type;
+	this.player = player;
+	this.src = src;
+	this.ctx = ctx;
+	this.img = img;
+/*
+	window.addEventListener('PieceReady', function(ev){		
+		this.setPieceIMG(ev.src, ev.img, ev.x, ev.y, ev.sizeX, ev.sizeY);
+	}.bind(this));
+*/
+};
+
+//sets the piece object src
+
+CanvasPiece.prototype.setPieceIMG = function(src,img,x,y,sizeX,sizeY) {
+
+	img.setAttribute('src', src);
+	img.setAttribute('x',x);
+	img.setAttribute('y',y);
+	img.setAttribute('width',sizeX);
+	img.setAttribute('height',sizeY);
+};
+
+
+//---------------------------------
 
 //create a board thing
 
@@ -37,7 +67,6 @@ var CanvasObject = function (rectSize, boardSizeX, boardSizeY, color1, color2) {
 	this.layers = [];
 	this.layers = this.setCanvasBoard(this.layers,rectSize,boardSizeX,boardSizeY,color1,color2);
 	
-	this.loadCounter = 0;
 };
 
 //set the canvas up and the background
@@ -81,6 +110,7 @@ CanvasObject.prototype.setCanvasBoard = function (layers,rectSize,boardSizeX,boa
 	layers = [boardL0,boardL1,boardL2,boardL3];
 
 	return layers;
+	
 };
 
 
@@ -94,11 +124,8 @@ CanvasObject.prototype.setCanvasPiece = function (Board, x, y) {
 
 		var ctx = canvas.getContext('2d');
 		var img = new Image();
-	
 		var src = this.getIMGSrcByTypePlayer(Board.board[y][x].type, Board.board[y][x].player);
-
-		img.src = src;
-
+		
 		var CanvasPiece1 =  new CanvasPiece (
 			Board.board[y][x].type,
 			Board.board[y][x].player,
@@ -106,10 +133,13 @@ CanvasObject.prototype.setCanvasPiece = function (Board, x, y) {
 			ctx,
 			img
 		); //type,player,src,context,img
-
-/*		this doesn't work
-
+	
 		img.onload = function () {
+			CanvasObject1.displayPiece(Board, CanvasObject1, x, y);
+		};
+ 
+/*		ignore this, it's for future reference
+
 			ev1 = new Event('PieceReady');
 			ev1.src = src;
 			ev1.img = img;
@@ -118,35 +148,8 @@ CanvasObject.prototype.setCanvasPiece = function (Board, x, y) {
 			ev1.sizeX = CanvasObject1.boardSizeX;
 			ev1.sizeY = CanvasObject1.boardSizeY;
 			window.dispatchEvent(ev1);
-		};
 */
-//		testing WOAH! IT WORKS!!! MUST TEST FURTHER
-
-		img.onload = function () {
-			ev1 = new Event('PieceReady');
-			ev1.src = src;
-			ev1.img = img;
-			ev1.x = x;
-			ev1.y = y;
-			ev1.sizeX = CanvasObject1.boardSizeX;
-			ev1.sizeY = CanvasObject1.boardSizeY;
-			window.dispatchEvent(ev1);
-
-			if (CanvasObject1.loadCounter == Board.ids) {
-				CanvasObject1.displayBoard(Board, CanvasObject1);
-			}
-			CanvasObject1.loadCounter++;
-		};
-//
-/*		this does work, though I have to specify the context as CanvasObject1 = this; my problem is that it will only work once, at the start...and I would like more control over the render function
-
-		CanvasObject1 = this;
-
-		img.onload = function () {
-			ctx.drawImage(img, CanvasObject1.rectSize * (x % CanvasObject1.boardSizeX) + 50, CanvasObject1.rectSize * (y % CanvasObject1.boardSizeY) + 50, 100, 100);
-		};
-*/
-
+		img.src = src;
 		BoardL1[y][x] = CanvasPiece1;
         }
 };
@@ -233,27 +236,14 @@ CanvasObject.prototype.getIMGSrcByTypePlayer = function (type, player) {
 };
 
 
-//display the chessboard pieces images taken from Layer 1 of the canvas object A.K.A The Render Loop.
-//This does not do anything as of now, as setCanvasPiece() has the onload event() that triggers displayPiece()
+//render a piece on the board, called by setCanvasPiece, which is called by a the setCanvasPieces loop
 
-CanvasObject.prototype.displayBoard = function (Board, CanvasObject) {
+CanvasObject.prototype.displayPiece = function (Board, CanvasObject, x, y) {
 
 	var BoardL1 = CanvasObject.layers[1];
+	BoardL1[y][x].ctx.drawImage(BoardL1[y][x].img, CanvasObject.rectSize * (x % CanvasObject.boardSizeX) + 50, CanvasObject.rectSize * (y % CanvasObject.boardSizeY) + 50, 100, 100);
 
-        for(var j = 0; j < Board.board.length; j++) {
-                for(var i = 0; i < Board.board[0].length; i++) {
-                        if(Board.board[j][i] != null){
-		
-				//context.drawImage(image,x,y,sizeX,sizeY);
-				//BoardL1[j][i] is the canvas chess piece at i,j, it has img and cxt (context) as part of its properties
-
-				//BoardL1[j][i].ctx.drawImage(BoardL1[j][i].img, this.rectSize * (i % this.boardSizeX) + 50, this.rectSize * (j % this.boardSizeY) + 50, 100, 100);
-				BoardL1[j][i].ctx.drawImage(BoardL1[j][i].img, CanvasObject.rectSize * (i % CanvasObject.boardSizeX) + 50, CanvasObject.rectSize * (j % CanvasObject.boardSizeY) + 50, 100, 100);
-                        }	
-                }
-        }
 };
-
 
 //display the moves for a given piece; needs the list of moves from MovesPiece()
 
@@ -293,39 +283,6 @@ CanvasObject.prototype.displayMoves = function(movesPiece, Board) { //THIS FUNCT
 
 };
 
-
-//---------------------------------
-
-
-//make a canvas piece object, it will have and load its img file source once depending on the chesspiece
-
-var CanvasPiece = function (type,player,src,ctx,img) {
-
-	this.type =  type;
-	this.player = player;
-	this.src = src;
-	this.ctx = ctx;
-	this.img = img;
-
-	window.addEventListener('PieceReady', function(ev){		
-		this.setPieceIMG(ev.src, ev.img, ev.x, ev.y, ev.sizeX, ev.sizeY);
-	}.bind(this));
-
-};
-
-
-//sets the piece object src
-
-CanvasPiece.prototype.setPieceIMG = function(src,img,x,y,sizeX,sizeY) {
-
-	img.setAttribute('src', src);
-	img.setAttribute('x',x);
-	img.setAttribute('y',y);
-	img.setAttribute('width',sizeX);
-	img.setAttribute('height',sizeY);
-};
-
-
 //---------------------------------
 
 
@@ -351,7 +308,7 @@ ChessBoard.prototype.setBoard = function(board,x,y) {
         for(var j = 0; j < y; j++) {
                 board[j] = [];
                 for(var i = 0; i  < x; i++) {
-                        board[j][i] = null;
+    	board[j][i] = null;
                 }
         }
         return board;
@@ -569,7 +526,7 @@ ChessBoard.prototype.moveW = function(Board,x,y,moves) {
 
 ChessBoard.prototype.moveN = function (Board,x,y,moves) {
 
-        for (var j = (y-1); j >= 0; j--) {
+        for (var j = (y-1); j >= 0; j--) {	
                 if( Board.isEnemy(Board,x,y,x,j) ) {
                         moves.push(x+ ',' +j);
                         break;
@@ -776,7 +733,6 @@ ChessBoard.prototype.moveSE1 = function (Board,x,y,moves) {
 
 
 //---------------------------------
-
 
 var ChessBoard1 = new ChessBoard (XboardSizeX,XboardSizeY);
 var CanvasObject1 = new CanvasObject (XrectSize, XboardSizeX, XboardSizeY, Xcolor1, Xcolor2);
