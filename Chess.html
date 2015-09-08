@@ -40,16 +40,7 @@ var CanvasPiece = function (type,player,src,ctx,img) {
 */
 };
 
-//sets the piece object src
 
-CanvasPiece.prototype.setPieceIMG = function(src,img,x,y,sizeX,sizeY) {
-
-	img.setAttribute('src', src);
-	img.setAttribute('x',x);
-	img.setAttribute('y',y);
-	img.setAttribute('width',sizeX);
-	img.setAttribute('height',sizeY);
-};
 
 
 //---------------------------------
@@ -244,6 +235,21 @@ CanvasObject.prototype.displayPiece = function (Board, CanvasObject, x, y) {
 	BoardL1[y][x].ctx.drawImage(BoardL1[y][x].img, CanvasObject.rectSize * (x % CanvasObject.boardSizeX) + 50, CanvasObject.rectSize * (y % CanvasObject.boardSizeY) + 50, 100, 100);
 
 };
+
+
+//modify a piece's properties; not yet working
+
+CanvasObject.prototype.scalePieceIMG = function(img,i,j,x,y,sizeX,sizeY) {
+
+	var BoardL1 = this.layers[1];
+	
+	BoardL1[j][i].img.setAttribute('x',x);
+	BoardL1[j][i].img.setAttribute('y',y);
+	BoardL1[j][i].img.setAttribute('width',sizeX);
+	BoardL1[j][i].img.setAttribute('height',sizeY);
+	
+};
+
 
 //display the moves for a given piece; needs the list of moves from MovesPiece()
 
@@ -742,6 +748,9 @@ ChessBoard1.setStdBoard(ChessBoard1);
 ChessBoard1.setPiece(ChessBoard1,4,4,'Q',1); //test piece
 
 CanvasObject1.setCanvasPieces(ChessBoard1);
+
+//var BoardL1 = CanvasObject1.layers[1];
+//CanvasObject1.scalePieceIMG(BoardL1[1][1].img,1,1,50,50,50,50);
 
 //CanvasObject1.displayBoard(ChessBoard1); //doesn't do anything as of now. Will probably need it later though.
 
