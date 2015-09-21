@@ -2,9 +2,17 @@
 <html>
 <body>
 <canvas id="canvasTest" width="900" height="900"></canvas>
+
+<p id="text1">This is a command line thing</p>
+<input type="text" name="cmd"></p>
+
+<p id="textMoves"></p>
+
 <script>
 
+
 //---------------------------------
+
 
 //ChessBoardTest3.1 - By eagleangelo and some nice people on the pbsideachannel (you know who you are)
 //i love you q, i love you sally, berra and billnye have helped me the most, diablo's a dick, meaty and aelius should go outside more often :P
@@ -24,6 +32,7 @@ Xcolor2 = 'lightgreen';
 
 //---------------------------------
 
+
 //make a canvas piece object, it will have and load its img file source once depending on the chesspiece
 
 var CanvasPiece = function (type,player,src,ctx,img) {
@@ -41,9 +50,8 @@ var CanvasPiece = function (type,player,src,ctx,img) {
 };
 
 
-
-
 //---------------------------------
+
 
 //create a board thing
 
@@ -59,6 +67,7 @@ var CanvasObject = function (rectSize, boardSizeX, boardSizeY, color1, color2) {
 	this.layers = this.setCanvasBoard(this.layers,rectSize,boardSizeX,boardSizeY,color1,color2);
 	
 };
+
 
 //set the canvas up and the background
 
@@ -167,6 +176,16 @@ CanvasObject.prototype.setCanvasPieces = function (Board) {
 };
 
 
+//render a piece on the board, called by setCanvasPiece, which is called by a the setCanvasPieces loop
+
+CanvasObject.prototype.displayPiece = function (Board, CanvasObject, x, y) {
+
+	var BoardL1 = CanvasObject.layers[1];
+	BoardL1[y][x].ctx.drawImage(BoardL1[y][x].img, CanvasObject.rectSize * (x % CanvasObject.boardSizeX) + 50, CanvasObject.rectSize * (y % CanvasObject.boardSizeY) + 50, 100, 100);
+
+};
+
+
 //provides the source for a given piece type and player
 
 CanvasObject.prototype.getIMGSrcByTypePlayer = function (type, player) {
@@ -233,16 +252,6 @@ CanvasObject.prototype.getIMGSrcByTypePlayer = function (type, player) {
 };
 
 
-//render a piece on the board, called by setCanvasPiece, which is called by a the setCanvasPieces loop
-
-CanvasObject.prototype.displayPiece = function (Board, CanvasObject, x, y) {
-
-	var BoardL1 = CanvasObject.layers[1];
-	BoardL1[y][x].ctx.drawImage(BoardL1[y][x].img, CanvasObject.rectSize * (x % CanvasObject.boardSizeX) + 50, CanvasObject.rectSize * (y % CanvasObject.boardSizeY) + 50, 100, 100);
-
-};
-
-
 //modify a piece's properties; not yet working
 
 CanvasObject.prototype.scalePieceIMG = function(img,i,j,x,y,sizeX,sizeY) {
@@ -264,27 +273,17 @@ CanvasObject.prototype.displayMoves = function(movesPiece, Board) {
         var moves = movesPiece;
 		var BoardL3 = this.layers[3];
 
-//need to turn this into text...somewhere...
-
-	/*
-	process.stdout.write(moves.length +' available moves.\n')
-
+		var textMoves = '';
         for(var i = 0; i < moves.length; i++) {
-                process.stdout.write(moves[i]+ '; ');
+                textMoves += moves[i]+ '; ';
         }
-	*/
+		
+		document.getElementById("textMoves").innerHTML = textMoves;
 
-        var display = [];
-        var displayX = [];
-        var displayY = [];
+	//the following loops split the list of moves into X and Y, then paints a square purple where said possition is
 
-	//the following loops split the list of moves into X and Y, then paints a square black where said possition is
-
-        for(var i = 0; i < moves.length; i++) {
-                display = moves[i].split(',');
-                displayX.push(display[0]);
-                displayY.push(display[1]);
-        }
+        var displayX = Board.movesX(moves);
+        var displayY = Board.movesY(moves);
 
         for(var i = 0; i < displayX.length; i++) {
 			BoardL3[displayY[i]][displayX[i]].save();
@@ -296,6 +295,12 @@ CanvasObject.prototype.displayMoves = function(movesPiece, Board) {
 
 };
 
+
+CanvasObject.prototype.movePiece = function (Board,x,y,i,j) {
+	
+};
+
+
 //---------------------------------
 
 
@@ -306,6 +311,7 @@ var ChessBoard = function (x,y) {
         this.ids = 0;
         this.board = [];
         this.board = this.setBoard(this.board,x,y);
+		this.outPieces = [];
 
 };
 
@@ -362,6 +368,7 @@ ChessBoard.prototype.setStdBoard = function (Board) {
 };
 
 
+/*
 //display the entire chessboard on the console (needs Node.js), based on the type property, can be changed for id, player or possition
 
 ChessBoard.prototype.displayBoardConsole = function (Board) {
@@ -382,10 +389,12 @@ ChessBoard.prototype.displayBoardConsole = function (Board) {
 
         process.stdout.write('\n');
 };
+*/
 
 
+
+/*
 //display the moves for a given piece on the console (needs Node.js); needs the list of moves from MovesPiece()
-
 ChessBoard.prototype.displayMovesConsole = function(movesPiece, Board) {
 
         var moves = movesPiece;
@@ -434,6 +443,7 @@ ChessBoard.prototype.displayMovesConsole = function(movesPiece, Board) {
         process.stdout.write('\n'); //for terminal purposes
 
 };
+*/
 
 
 //movement functions
@@ -449,6 +459,7 @@ ChessBoard.prototype.isEmpty = function (Board,x,y) {
         }
 };
 
+
 //isEnemy?
 
 ChessBoard.prototype.isEnemy = function (Board,x,y,i,j) {
@@ -462,6 +473,7 @@ ChessBoard.prototype.isEnemy = function (Board,x,y,i,j) {
                 return false;
         }
 };
+
 
 //Provide a list of available moves for a given piece, recognize the type and return the array of moves
 
@@ -513,6 +525,39 @@ ChessBoard.prototype.movesPiece = function(Board,x,y) {
         }
 
 };
+
+//split the moves array for easy of use on other functions
+
+ChessBoard.prototype.movesX = function (movesPiece) {
+
+	    var moves1 = movesPiece;
+		
+        var moves2 = [];
+        var movesX = []; 
+		
+        for(var i = 0; i < moves1.length; i++) {
+                moves2 = moves1[i].split(',');
+                movesX.push(moves2[0]);
+        }
+		
+		return movesX;
+};
+
+ChessBoard.prototype.movesY = function (movesPiece) {
+
+	    var moves1 = movesPiece;
+		
+        var moves2 = [];
+        var movesY = [];
+
+        for(var i = 0; i < moves1.length; i++) {
+                moves2 = moves1[i].split(',');
+                movesY.push(moves2[1]);
+        }
+		
+		return movesY;
+};
+
 
 //standard directions: NSEW. cross, diagonal and one at a time
 
@@ -756,6 +801,41 @@ ChessBoard.prototype.moveSE1 = function (Board,x,y,moves) {
 };
 
 
+//check if the given coordinates are within the list of moves for a piece
+
+ChessBoard.prototype.canMove = function (Board,x,y,i,j) {
+	
+	var moves = Board.movesPiece(ChessBoard1,x,y);
+	var movesX = Board.movesX(moves);
+	var movesY = Board.movesY(moves);
+	
+	for (n = 0; n < movesX.length; n++) {
+		if (i == movesX[n] && j ==  movesY[n])	 {
+			return true;
+		}
+	}
+	
+	return false;
+};
+
+//moves a piece in the chessboard, calls canMove
+
+ChessBoard.prototype.move = function (Board,x,y,i,j) {
+	
+	if (Board.canMove(Board,x,y,i,j)) {
+		if (isEnemy(Board,x,y,i,j)) {
+			Board.outPieces.push(Board.board[y][x]);
+			Board.board[j][i] = Board.board[y][x];
+			Board.board[y][x] = null;
+		} else {
+			Board.board[j][i] = Board.board[y][x];
+			Board.board[y][x] = null;
+		}
+	}
+	
+};
+
+
 //---------------------------------
 
 var ChessBoard1 = new ChessBoard (XboardSizeX,XboardSizeY);
@@ -773,6 +853,7 @@ CanvasObject1.setCanvasPieces(ChessBoard1);
 //CanvasObject1.displayBoard(ChessBoard1); //doesn't do anything as of now. Will probably need it later though.
 
 CanvasObject1.displayMoves(ChessBoard1.movesPiece(ChessBoard1,4,4),ChessBoard1); //display moves for 4,4
+
 
 
 //---------------------------------
