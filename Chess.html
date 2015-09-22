@@ -3,13 +3,18 @@
 <body>
 <canvas id="canvasTest" width="900" height="900"></canvas>
 
-<p id="text1">This is a command line thing</p>
-<input type="text" name="cmd"></p>
+<p id="text1">This is a command line thing for movement</p>
+
+<input type="text" id="x1" value="4"/><br>
+<input type="text" id="y1" value="4"/><br>
+<input type="text" id="x2"/><br>
+<input type="text" id="y2"/><br><br>
+<input type="button" onclick="movePieceIMG()" id="testBTN" value="Submit">
+
 
 <p id="textMoves"></p>
 
 <script>
-
 
 //---------------------------------
 
@@ -141,7 +146,7 @@ CanvasObject.prototype.setCanvasPiece = function (Board, x, y) {
 		); //type,player,src,context,img
 	
 		img.onload = function () {
-			CanvasObject1.displayPiece(Board, CanvasObject1, x, y);
+			CanvasObject1.displayPiece(CanvasObject1, x, y);
 		};
  
 /*		ignore this, it's for future reference
@@ -169,7 +174,7 @@ CanvasObject.prototype.setCanvasPieces = function (Board) {
                 for(var i = 0; i < Board.board[0].length; i++) {
                         if(Board.board[j][i] != null){
 
-				this.setCanvasPiece(Board, i, j);
+							this.setCanvasPiece(Board, i, j);
                         }	
                 }
         }
@@ -178,10 +183,10 @@ CanvasObject.prototype.setCanvasPieces = function (Board) {
 
 //render a piece on the board, called by setCanvasPiece, which is called by a the setCanvasPieces loop
 
-CanvasObject.prototype.displayPiece = function (Board, CanvasObject, x, y) {
+CanvasObject.prototype.displayPiece = function (CanvasObject, x, y) {
 
 	var BoardL1 = CanvasObject.layers[1];
-	BoardL1[y][x].ctx.drawImage(BoardL1[y][x].img, CanvasObject.rectSize * (x % CanvasObject.boardSizeX) + 50, CanvasObject.rectSize * (y % CanvasObject.boardSizeY) + 50, 100, 100);
+	BoardL1[y][x].ctx.drawImage(BoardL1[y][x].img, CanvasObject.rectSize * (x % CanvasObject.boardSizeX) + 50, CanvasObject.rectSize * (y % CanvasObject.boardSizeY) + 50, CanvasObject.rectSize, CanvasObject.rectSize);
 
 };
 
@@ -254,14 +259,31 @@ CanvasObject.prototype.getIMGSrcByTypePlayer = function (type, player) {
 
 //modify a piece's properties; not yet working
 
-CanvasObject.prototype.scalePieceIMG = function(img,i,j,x,y,sizeX,sizeY) {
+CanvasObject.prototype.movePieceIMG = function(x,y,i,j) {
 
 	var BoardL1 = this.layers[1];
 	
-	BoardL1[j][i].img.setAttribute('x',x);
-	BoardL1[j][i].img.setAttribute('y',y);
-	BoardL1[j][i].img.setAttribute('width',sizeX);
-	BoardL1[j][i].img.setAttribute('height',sizeY);
+	BoardL1[y][x].img.setAttribute('x', this.rectSize * (i % this.boardSizeX) + 50);
+	BoardL1[y][x].img.setAttribute('y', this.rectSize * (j % this.boardSizeY) + 50);
+	BoardL1[j][i] = BoardL1[y][x];
+	BoardL1[y][x] = null;
+};
+
+function movePieceIMG () {
+
+	var x = document.getElementById("x1").value;
+	var y = document.getElementById("y1").value;
+	var i = document.getElementById("x2").value;
+	var j = document.getElementById("y2").value;
+
+	var BoardL1 = CanvasObject1.layers[1];
+
+	BoardL1[y][x].ctx.drawImage(BoardL1[y][x].img, CanvasObject1.rectSize * (i % CanvasObject1.boardSizeX) + 50, CanvasObject1.rectSize * (j % CanvasObject1.boardSizeY) + 50, CanvasObject1.rectSize, CanvasObject1.rectSize);
+	BoardL1[y][x].ctx.clearRect(CanvasObject1.rectSize * (x % CanvasObject1.boardSizeX) + 50, CanvasObject1.rectSize * (y % CanvasObject1.boardSizeY) + 50, CanvasObject1.rectSize, CanvasObject1.rectSize);
+	
+	
+	BoardL1[j][i] = BoardL1[y][x];
+	BoardL1[y][x] = null;
 	
 };
 
@@ -293,11 +315,6 @@ CanvasObject.prototype.displayMoves = function(movesPiece, Board) {
 			BoardL3[displayY[i]][displayX[i]].restore();
         }
 
-};
-
-
-CanvasObject.prototype.movePiece = function (Board,x,y,i,j) {
-	
 };
 
 
