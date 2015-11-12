@@ -23,8 +23,8 @@ s.send(bytes("JOIN #botTesting\r\n", "UTF-8"));
 s.send(bytes("PRIVMSG %s :Hello, testing 1 2 3\r\n" % MASTER, "UTF-8"))
 
 while 1:
-    readbuffer = readbuffer+s.recv(1024).decode("UTF-8")
-    temp = str.split(readbuffer, "\n")
+    readbuffer = readbuffer+s.recv(1024).decode("UTF-8") #readbuffer = readbuffer+s.recv(512).decode("UTF-8")
+    temp = str.split(readbuffer, "\n") #temp = str.split(readbuffer)
     readbuffer=temp.pop( )
 
     for line in temp:
