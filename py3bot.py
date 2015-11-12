@@ -24,8 +24,8 @@ s.send(bytes("PRIVMSG %s :Hello, testing 1 2 3\r\n" % MASTER, "UTF-8"))
 
 while 1:
     readbuffer = readbuffer+s.recv(1024).decode("UTF-8") #readbuffer = readbuffer+s.recv(512).decode("UTF-8")
-    temp = str.split(readbuffer, "\n") #temp = str.split(readbuffer)
-    readbuffer=temp.pop( )
+    temp = str.split(readbuffer, "\n") #remove
+    readbuffer=temp.pop( ) #remove
 
     for line in temp:
         line = str.rstrip(line)
