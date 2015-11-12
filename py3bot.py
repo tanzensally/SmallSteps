@@ -27,7 +27,7 @@ while 1:
     temp = str.split(readbuffer, "\n") #remove
     readbuffer=temp.pop( ) #remove
 
-    for line in temp:
+    for line in temp: #for line in readbuffer:
         line = str.rstrip(line)
         line = str.split(line)
 
