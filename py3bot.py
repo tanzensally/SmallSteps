@@ -25,6 +25,12 @@ s.send(bytes("JOIN "+ CHANNEL + "\r\n", "UTF-8"));
 
 s.send(bytes("PRIVMSG %s :Hello, testing 1 2 3\r\n" % MASTER, "UTF-8"))
 
+#import urllib.request
+#with urllib.request.urlopen("https://webchat.freenode.net/?channels=#pbsideachannel") as url:
+#    s = url.read()
+#I'm guessing this would output the html source code?
+#print(s)
+
 while 1:
     readbuffer = readbuffer+s.recv(512).decode("UTF-8")
     temp = str.split(readbuffer, "\n")
