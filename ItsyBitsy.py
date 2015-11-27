@@ -6,8 +6,7 @@ import re
 
 wb = win32com.client.Dispatch("InternetExplorer.Application")
 wb.Visible = 1
-wb.Navigate("http://itsm.ss.sw.ericsson.se/")
-#wb.Navigate("www.google.com")
+wb.Navigate("www.google.com")
 
 while (wb.busy): #wb.ReadyState != 4 or wb.Document.Readystate != "Complete"):
  time.sleep(5)
