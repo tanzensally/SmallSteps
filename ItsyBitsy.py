@@ -5,7 +5,7 @@ import sys
 import re
 
 wb = win32com.client.Dispatch("InternetExplorer.Application")
-wb.Visible = 1
+wb.Visible = 0
 wb.Navigate("www.google.com")
 
 while (wb.busy): #wb.ReadyState != 4 or wb.Document.Readystate != "Complete"):
@@ -19,16 +19,59 @@ while (wb.busy): #wb.ReadyState != 4 or wb.Document.Readystate != "Complete"):
 
 #wb.document.all.IMAGE1.click()
 
-action = input("Press Q to quit. Press Enter to continue. ")
+while True:
+ action = input("\nPress q + Enter to quit. c + Enter to continue. \n")
  
-if action == Q:
- sys.exit("Exiting Script")
-else
- text = wb.document.documentElement.innerText
- html = wb.document.documentElement.innerHTML
+ if action == 'q':
+  wb.quit()
+  sys.exit("\nExiting Script\n")
+  
+ elif action == 'c':
+  text = wb.document.documentElement.innerText
+  html = wb.document.documentElement.innerHTML
 
- search = input("Data retrieved, please input search term. ")
- matching = re.match(search,text, re.I)
+  term = input("\nData retrieved, please input search term: \n")
+  
+  seachingText = re.finditer(term,text,re.I)
+  seachingHTML = re.finditer(term,html,re.I)
+  
+  Textfound = re.search(term,text,re.I)
+  HTMLfound = re.search(term,html,re.I)
+
+  if Textfound:
+   print ("\nDocument.text: \n")
+   for s in seachingText:
+    print (s.start(),s.end(),s.group())
+  else:
+   print ("\nNo matches in Document.text\n")
+  
+  if HTMLfound:
+   print ("\nDocument.HTML: \n")
+   for s in seachingHTML:
+    print (s.start(),s.end(),s.group())
+  else:
+   print ("\nNo matches in Document.HTML\n")
+  
+  extend = input("\nExtend lines? y/n \n")
+  
+  if extend == 'y':
+   seachingText = re.finditer('(.{25})'+term+'(.{25})',text,re.I)
+   seachingHTML = re.finditer('(.{25})'+term+'(.{25})',html,re.I)
+   
+   if Textfound:
+    print ("\nDocument.text: \n")
+    for s in seachingText:
+     print (s.start(),s.end(),s.group())
+   else:
+    print ("\nNo matches in Document.text\n")
+
+   if HTMLfound:
+    print ("\nDocument.HTML: \n")
+    for s in seachingHTML:
+     print (s.start(),s.end(),s.group())
+   else:
+    print ("\nNo matches in Document.HTML\n")
+   
 
 #path1 = "C:\dat.txt"
 #path1 =  os.path.normpath(path1)
