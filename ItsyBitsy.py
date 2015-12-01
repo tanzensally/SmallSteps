@@ -7,25 +7,25 @@ import re
 clear = lambda: os.system('cls')
 
 wb = win32com.client.Dispatch("InternetExplorer.Application")
-wb.Visible = 0
+wb.Visible = 1
+wb.Navigate("about:blank")
 
 while (wb.busy): 
  time.sleep(5)
 
-site = ""
-
 clear()
 
-print("I think Berra is a pretty cool guy if he reads this message :D")
+site = ''
 
 while True:
+
  print("Welcome!")
  if not site:
   print("No website is currently selected")
  else:
   print(site, "is the currently selected website")
   
- action = input("\nq = quit, w = change website, c = continue\n")
+ action = input("\nq = quit, w = change website manualy, c = continue\n")
  
  if action == 'q':
   wb.quit()
@@ -34,6 +34,17 @@ while True:
  
  elif action == 'w':
   site = input("\nPlease enter the website's address or IP\n")
+  
+  print("\nLooking up website, this may take a moment")
+  
+  pings = os.system("ping -n 1 " + site)
+
+  wb.Navigate(site)
+
+  while (wb.busy):
+   time.sleep(5)
+   
+  cont = input("\nPress any key to continue\n")
   clear()
    
  elif action == 'c':
@@ -42,14 +53,7 @@ while True:
    cont = input("\nPress any key to continue\n")
    clear()
   else:
-  
-   print("\nLooking up website, this may take a moment")
-   
-   wb.Navigate(site)
-   
-   while (wb.busy):   
-    time.sleep(5)
-   
+
    text = wb.document.documentElement.innerText
    html = wb.document.documentElement.innerHTML
    
