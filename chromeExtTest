@@ -1,1 +1,57 @@
-test
+//manifest
+
+{
+  "manifest_version": 2,
+  "name": "TestExtension",
+  "version": "0.1",
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": ["jquery-2.1.4.js", "TestExtension.js"]
+    }
+  ],
+  "browser_action": {
+    "default_icon": "icon.png"
+  }
+}
+
+// TestExtension.js
+
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+    if( request.message === "clicked_browser_action" ) {
+      var firstHref = $("a[href^='http']").eq(0).attr("href");
+      console.log(firstHref);
+      //chrome.runtime.sendMessage({"message": "open_new_tab", "url": firstHref});
+      //chrome.runtime.sendMessage({"message": "open_new_tab", "url": "http://itsm.ss.sw.ericsson.se/"});
+      chrome.runtime.sendMessage({"message": "open_URL", "url": "www.google.com"});      
+    }
+  }
+);
+
+// background.js
+
+chrome.browserAction.onClicked.addListener(function(tab) {
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    chrome.tabs.sendMessage(tabs[0].id, {"message": "clicked_browser_action"});
+  });
+});
+
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+    if( request.message === "open_new_tab" ) {
+      chrome.tabs.create({"url": request.url});
+    }
+    if( request.message === "open_URL" ) {
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+            chrome.tabs.update(tabs[0].id, {"url": request.url});
+        });
+    }
+  }
+);
+
