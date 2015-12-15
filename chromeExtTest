@@ -1,8 +1,7 @@
-//manifest
-
 {
   "manifest_version": 2,
   "name": "TestExtension",
+  "description": "A test extension",
   "version": "0.1",
   "background": {
     "scripts": ["background.js"]
@@ -15,9 +14,25 @@
       "js": ["jquery-2.1.4.js", "TestExtension.js"]
     }
   ],
+  /*
   "browser_action": {
     "default_icon": "icon.png"
   }
+  
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_title": "Extension_Test_Title"
+  }
+  
+ */
+  "browser_action": {
+          "default_icon": {                    // optional
+            "19": "img/icon19.png",           // optional
+            "38": "img/icon38.png"            // optional
+          },
+          "default_title": "Extension_Test_Title",// optional; shown in tooltip
+          "default_popup": "popup.html"        // optional
+    }
 }
 
 // TestExtension.js
@@ -27,12 +42,36 @@ chrome.runtime.onMessage.addListener(
     if( request.message === "clicked_browser_action" ) {
       var firstHref = $("a[href^='http']").eq(0).attr("href");
       console.log(firstHref);
+      //var url = "http://www.reddit.com/";
       //chrome.runtime.sendMessage({"message": "open_new_tab", "url": firstHref});
-      //chrome.runtime.sendMessage({"message": "open_new_tab", "url": "http://itsm.ss.sw.ericsson.se/"});
-      chrome.runtime.sendMessage({"message": "open_URL", "url": "www.google.com"});      
+      //chrome.runtime.sendMessage({"message": "open_URL", "url": url});
+    }
+    
+    if( request.message === "click_username" ) {
+      alert("test1");
+      document.getElementsByClassName("user")[0].childNodes[0].textContent = "test";
+      alert("test2");
     }
   }
 );
+
+//var tabId = parseInt(window.location.search.substring(1));
+
+
+//leaving this for later
+function parseURL(url) {
+  var result = {};
+  var match = url.match(
+      /^([^:]+):\/\/([^\/:]*)(?::([\d]+))?(?:(\/[^#]*)(?:#(.*))?)?$/i);
+  if (!match)
+    return result;
+  result.scheme = match[1].toLowerCase();
+  result.host = match[2];
+  result.port = match[3];
+  result.path = match[4] || "/";
+  result.fragment = match[5];
+  return result;
+}
 
 // background.js
 
@@ -52,6 +91,76 @@ chrome.runtime.onMessage.addListener(
             chrome.tabs.update(tabs[0].id, {"url": request.url});
         });
     }
+    if( request.message === "click_username" ) {
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+            chrome.tabs.sendMessage(tabs[0].id, {"message": "click_username"});
+            //alert("test");
+        });
+    }
   }
 );
 
+<!DOCTYPE html>
+<html>
+<body>
+
+<p id="test1">Test 1</p>
+
+<form>
+  User:<br>
+  <input type="text" id="user1" name="user">
+  <br>
+  Password:<br>
+  <input type="text" id="password1" name="password">
+</form>
+
+<p>Test 2</p>
+
+<form>
+  <input type="radio" id="open1" name="open" value="User" checked>User
+  <br>
+  <input type="radio" id="open1" name="open" value="Preferences">Preferences
+</form>
+
+<p>Test 3</p>
+
+<button type="button" id="btnSubmit1">Submit</button>
+<button type="button" id="btnUser1">User Profile</button>
+<button type="button" id="btnSearchTxt1">Search Text</button>
+
+<script type="text/javascript" src="popup.js"></script>
+<script type="text/javascript" src="TestExtension.js"></script>
+
+</body>
+</html>
+
+// var app = chrome.runtime.getBackgroundPage();
+
+function hello() {
+  chrome.tabs.executeScript({
+    file: 'alert.js'
+  }); 
+}
+
+function submitCredentials() {
+     //document.getElementsByClassName("user").click(); 
+}
+
+document.getElementById('btnUser1').onclick = clickUsername;
+
+function clickUsername() {
+     //document.getElementsByClassName("user")[0].click(); 
+     chrome.runtime.sendMessage({"message": "click_username"});
+     
+     var my_script = document.createElement('script');
+     my_script.src = 'http://yo_man.com/script.js';
+     document.body.appendChild(my_script);
+}
+
+document.getElementById('btnSearchTxt1').onclick = changeSearchText;
+
+function changeSearchText() {
+     document.getElementById("test1").textContent = "Test 1 successful";
+}
+
+//document.getElementById('submit1').addEventListener('click', hello);
