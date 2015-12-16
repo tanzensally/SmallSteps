@@ -1,3 +1,5 @@
+//manifest
+
 {
   "manifest_version": 2,
   "name": "TestExtension",
@@ -100,6 +102,8 @@ chrome.runtime.onMessage.addListener(
   }
 );
 
+//popup.html
+
 <!DOCTYPE html>
 <html>
 <body>
@@ -133,6 +137,8 @@ chrome.runtime.onMessage.addListener(
 
 </body>
 </html>
+
+//popup.js
 
 // var app = chrome.runtime.getBackgroundPage();
 
