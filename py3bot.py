@@ -8,11 +8,11 @@ from threading import Timer
 HOST = "irc.freenode.net"
 PORT = 6667
 
-NICK = #botNick
-IDENT = #password
-REALNAME = #botNick
-MASTER = #botOwnerNick
-CHANNEL = "#botTesting"
+#NICK = #botNick
+#IDENT = #password
+#REALNAME = #botNick
+#MASTER = #botOwnerNick
+#CHANNEL = "#botTesting"
 
 readbuffer = ""
 
@@ -54,8 +54,8 @@ while 1:
                 s.send(bytes("PRIVMSG "+ sender + " :" + message + "\r\n", "UTF-8"))
             elif(line [3] == ":!quit"):
                 s.send(bytes("QUIT %s\r\n", "UTF-8"))
-            elif(line [3] == ":!poke"):
-                s.send(bytes(sender + " =====> " + line[4], "UTF-8"))
+            #elif(line [3] == ":!poke"):
+            #    s.send(bytes("PRIVMSG "+ sender + " =====> " + line[4], "UTF-8"))
             elif(line [3] == ":!ping"):
                 s.send(bytes("PRIVMSG "+ CHANNEL + " :PONG!!! (╯°□°)╯︵ ┻━┻\r\n", "UTF-8"))
             elif(line[3] == ":!tell"):
@@ -68,7 +68,11 @@ while 1:
                     message += ' '
                     j += 1
                 i = 3
-                #t = Timer(delaySec, tell,[recipient,message]) #this one i'm trying to get to work, should execute the function after a delay
-                tell(recipient,message) #this one works but is instant
+                try:
+                    delaySec = float(delaySec)
+                    t = Timer(delaySec, tell,[recipient,message])
+                    t.start();
+                except ValueError:
+                    s.send(bytes("PRIVMSG "+ CHANNEL + " :syntax -> !tell Nick delay(seconds) message1 message2 etc", "UTF-8"))
         for index, i in enumerate(line):
             print(line[index],index)
