@@ -3,6 +3,7 @@
 import sys
 import socket
 import string
+from threading import Timer
 
 HOST = "irc.freenode.net"
 PORT = 6667
@@ -11,8 +12,8 @@ NICK = "Oka_Nieba"
 IDENT = "guttenMorgen"
 REALNAME = "Oka_Nieba"
 MASTER = "Cheshire"
-#CHANNEL = "#PBSIdeaChannel"
-CHANNEL = "#botTesting"
+CHANNEL = "#PBSIdeaChannel"
+#CHANNEL = "#botTesting"
 
 readbuffer = ""
 
@@ -25,11 +26,8 @@ s.send(bytes("JOIN "+ CHANNEL + "\r\n", "UTF-8"));
 
 s.send(bytes("PRIVMSG %s :Hello, testing 1 2 3\r\n" % MASTER, "UTF-8"))
 
-#import urllib.request
-#with urllib.request.urlopen("https://webchat.freenode.net/?channels=#pbsideachannel") as url:
-#    s = url.read()
-#I'm guessing this would output the html source code?
-#print(s)
+def tell(recipient,message):
+    s.send(bytes("PRIVMSG "+ recipient + " :" + message + "\r\n", "UTF-8"))
 
 while 1:
     readbuffer = readbuffer+s.recv(512).decode("UTF-8")
@@ -59,5 +57,17 @@ while 1:
                 s.send(bytes("QUIT %s\r\n", "UTF-8"))
             elif(line [3] == ":!ping"):
                 s.send(bytes("PRIVMSG "+ CHANNEL + " :PONG!!! (╯°□°)╯︵ ┻━┻\r\n", "UTF-8"))
+            elif(line[3] == ":!tell"):
+                recipient = line[4]
+                delaySec = line[5]
+                message = ''
+                j = 6
+                while j < len(line):
+                    message += line[j]
+                    message += ' '
+                    j += 1
+                i = 3
+                #t = Timer(delaySec, tell,[recipient,message])
+                tell(recipient,message)
         for index, i in enumerate(line):
-            print(line[index], index)
+            print(line[index],index)
