@@ -8,12 +8,11 @@ from threading import Timer
 HOST = "irc.freenode.net"
 PORT = 6667
 
-NICK = "Oka_Nieba"
-IDENT = "guttenMorgen"
-REALNAME = "Oka_Nieba"
-MASTER = "Cheshire"
-CHANNEL = "#PBSIdeaChannel"
-#CHANNEL = "#botTesting"
+NICK = #botNick
+IDENT = #password
+REALNAME = #botNick
+MASTER = #botOwnerNick
+CHANNEL = "#botTesting"
 
 readbuffer = ""
 
@@ -67,7 +66,7 @@ while 1:
                     message += ' '
                     j += 1
                 i = 3
-                #t = Timer(delaySec, tell,[recipient,message])
-                tell(recipient,message)
+                #t = Timer(delaySec, tell,[recipient,message]) #this one i'm trying to get to work, should execute the function after a delay
+                tell(recipient,message) #this one works but is instant
         for index, i in enumerate(line):
             print(line[index],index)
