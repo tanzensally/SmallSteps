@@ -54,6 +54,8 @@ while 1:
                 s.send(bytes("PRIVMSG "+ sender + " :" + message + "\r\n", "UTF-8"))
             elif(line [3] == ":!quit"):
                 s.send(bytes("QUIT %s\r\n", "UTF-8"))
+            elif(line [3] == ":!poke"):
+                s.send(bytes(sender + " =====> " + line[4], "UTF-8"))
             elif(line [3] == ":!ping"):
                 s.send(bytes("PRIVMSG "+ CHANNEL + " :PONG!!! (╯°□°)╯︵ ┻━┻\r\n", "UTF-8"))
             elif(line[3] == ":!tell"):
