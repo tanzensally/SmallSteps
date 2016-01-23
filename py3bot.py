@@ -73,6 +73,6 @@ while 1:
                     t = Timer(delaySec, tell,[recipient,message])
                     t.start();
                 except ValueError:
-                    s.send(bytes("PRIVMSG "+ CHANNEL + " :syntax -> !tell Nick delay(seconds) message1 message2 etc", "UTF-8"))
+                    s.send(bytes("PRIVMSG "+ CHANNEL + " :syntax -> !tell Nick delay(seconds) message1 message2 etc\r\n", "UTF-8"))
         for index, i in enumerate(line):
             print(line[index],index)
